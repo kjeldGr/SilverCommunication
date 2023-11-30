@@ -31,17 +31,20 @@ public struct Request {
         case data(Data)
         case dictionary([AnyHashable: AnyHashable])
         case encodable(Encodable, encoder: JSONEncoder = JSONEncoder())
+        case multipart(MultipartRequestBody)
         
         public static func == (lhs: Request.HTTPBody, rhs: Request.HTTPBody) -> Bool {
             switch (lhs, rhs) {
-            case let (.data(lhsData), .data(rhsData)):
-                return lhsData == rhsData
-            case let (.dictionary(lhsDictionary), .dictionary(rhsDictionary)):
-                return lhsDictionary == rhsDictionary
+            case let (.data(lhs), .data(rhs)):
+                return lhs == rhs
+            case let (.dictionary(lhs), .dictionary(rhs)):
+                return lhs == rhs
             case let (.encodable(lhsEncodable, lhsEncoder), .encodable(rhsEncodable, rhsEncoder)):
                 let lhsData = try? lhsEncoder.encode(lhsEncodable)
                 let rhsData = try? rhsEncoder.encode(rhsEncodable)
                 return lhsData == rhsData
+            case let (.multipart(lhs), .multipart(rhs)):
+                return lhs == rhs
             default:
                 return false
             }
