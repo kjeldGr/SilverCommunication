@@ -15,7 +15,7 @@ public enum RequestManagerError: Error {
     case missingData
 }
 
-public final class RequestManager {
+public final class RequestManager: ObservableObject {
     
     // MARK: - Public properties
     
