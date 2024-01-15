@@ -15,10 +15,10 @@ public struct MultipartRequestBody: Equatable {
     let items: [MultipartItem]
     var httpBody: Data {
         var httpBody = items.reduce(into: Data()) { partialResult, item in
-            partialResult.append(Data("--\(boundary)\r\n".utf8))
+            partialResult.append(Data("----------------------------\(boundary)\r\n".utf8))
             partialResult.append(item.bodyData)
         }
-        httpBody.append(Data("--\(boundary)--".utf8))
+        httpBody.append(Data("----------------------------\(boundary)--\r\n".utf8))
         return httpBody
     }
     

@@ -20,8 +20,8 @@ public struct MultipartFile: MultipartItemType {
     
     public var bodyData: Data {
         var bodyData = Data()
-        bodyData.append(Data("Content-Type: \(type)\r\n".utf8))
-        bodyData.append(Data("Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(name).\(fileExtension)\"\r\n\r\n".utf8))
+        bodyData.append(Data("Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(name).\(fileExtension)\"\r\n".utf8))
+        bodyData.append(Data("Content-Type: \(type)\r\n\r\n".utf8))
         bodyData.append(data)
         bodyData.append(Data("\r\n".utf8))
         return bodyData
