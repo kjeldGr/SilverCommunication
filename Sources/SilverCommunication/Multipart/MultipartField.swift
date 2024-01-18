@@ -19,9 +19,9 @@ public struct MultipartField: MultipartItemType {
     
     public var bodyData: Data {
         var bodyData = Data()
-        bodyData.append(Data("Content-Type: \(type); charset=ISO-8859-1\r\n".utf8))
+        bodyData.append(Data("Content-Disposition: form-data; name=\"\(name)\"\"\r\n".utf8))
         bodyData.append(Data("Content-Transfer-Encoding: 8bit\r\n".utf8))
-        bodyData.append(Data("Content-Disposition: form-data; name=\"\(name)\"\"\r\n\r\n".utf8))
+        bodyData.append(Data("Content-Type: \(type); charset=ISO-8859-1\r\n\r\n".utf8))
         bodyData.append(data)
         bodyData.append(Data("\r\n".utf8))
         return bodyData
