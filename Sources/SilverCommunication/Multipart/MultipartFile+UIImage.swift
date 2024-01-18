@@ -8,22 +8,16 @@
 #if os(iOS)
 import UIKit
 
-public extension MultipartFile {
-    enum ImageType {
-        case png
-        case jpeg
-    }
-    
+public extension MultipartFile {    
     init?(
         image: UIImage,
-        preferredImageType: ImageType = .png,
         name: String = UUID().uuidString
     ) {
         let data: Data
         let type: String
         let fileExtension: String
         
-        if let imageData = image.pngData(), preferredImageType == .png {
+        if let imageData = image.pngData() {
             data = imageData
             type = "image/png"
             fileExtension = "png"
@@ -35,6 +29,17 @@ public extension MultipartFile {
             return nil
         }
         self.init(data: data, type: type, name: name, fileExtension: fileExtension)
+    }
+    
+    init?(
+        imageData: Data,
+        type: String,
+        name: String = UUID().uuidString
+    ) {
+        guard let fileExtension = type.split(separator: "/").last.flatMap({ String($0) }) else {
+            return nil
+        }
+        self.init(data: imageData, type: type, name: name, fileExtension: fileExtension)
     }
 }
 #endif
