@@ -40,6 +40,11 @@ extension URLRequest {
                 .contentType: "application/json"
             ].merging(request.headers ?? [:]) { _, new in new }
             httpBody = try encoder.encode(encodable)
+        case let .multipart(body):
+            headers = [
+                .contentType: "multipart/form-data; boundary=\(body.boundary)"
+            ].merging(request.headers ?? [:]) { _, new in new }
+            httpBody = body.httpBody
         case .none:
             headers = request.headers
             httpBody = nil
