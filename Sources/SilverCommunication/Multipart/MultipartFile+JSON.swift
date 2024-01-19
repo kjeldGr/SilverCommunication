@@ -9,14 +9,10 @@ import Foundation
 
 public extension MultipartFile {
     init(json: String, name: String = UUID().uuidString) {
-        self.init(jsonData: Data(json.utf8), name: name)
+        self.init(data: Data(json.utf8), name: name, contentType: .json)
     }
     
     init(encodable: Encodable, encoder: JSONEncoder = JSONEncoder(), name: String = UUID().uuidString) throws {
-        try self.init(jsonData: encoder.encode(encodable), name: name)
-    }
-    
-    private init(jsonData: Data, name: String) {
-        self.init(data: jsonData, type: "application/json", name: name, fileExtension: "json")
+        try self.init(data: encoder.encode(encodable), name: name, contentType: .json)
     }
 }

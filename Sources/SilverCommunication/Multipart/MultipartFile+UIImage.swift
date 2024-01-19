@@ -11,35 +11,34 @@ import UIKit
 public extension MultipartFile {    
     init?(
         image: UIImage,
+        contentType: ContentType,
         name: String = UUID().uuidString
     ) {
         let data: Data
-        let type: String
-        let fileExtension: String
-        
-        if let imageData = image.pngData() {
-            data = imageData
-            type = "image/png"
-            fileExtension = "png"
-        } else if let imageData = image.jpegData(compressionQuality: 1) {
-            data = imageData
-            type = "image/jpeg"
-            fileExtension = "jpg"
-        } else {
+        switch contentType {
+        case .png, .custom("image/png", _):
+            guard let pngData = image.pngData() else {
+                return nil
+            }
+            data = pngData
+        case let .jpeg(bytes?):
+            guard let jpegData = image.compress(to: bytes) else {
+                return nil
+            }
+            data = jpegData
+        case .jpeg(.none), .custom("image/jpeg", _):
+            guard let jpegData = image.jpegData(compressionQuality: 1) else {
+                return nil
+            }
+            data = jpegData
+        default:
             return nil
         }
-        self.init(data: data, type: type, name: name, fileExtension: fileExtension)
-    }
-    
-    init?(
-        imageData: Data,
-        type: String,
-        name: String = UUID().uuidString
-    ) {
-        guard let fileExtension = type.split(separator: "/").last.flatMap({ String($0) }) else {
-            return nil
-        }
-        self.init(data: imageData, type: type, name: name, fileExtension: fileExtension)
+        self.init(
+            data: data,
+            name: name,
+            contentType: contentType
+        )
     }
 }
 #endif
