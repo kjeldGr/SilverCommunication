@@ -11,7 +11,7 @@ public struct MultipartFile: MultipartItemType {
     
     public enum ContentType: Equatable {
         case custom(header: String, fileExtension: String)
-        case jpeg(compressToBytes: Int? = nil)
+        case jpeg
         case json
         case png
         
@@ -60,9 +60,9 @@ public struct MultipartFile: MultipartItemType {
     
     // MARK: - Initializers
     
-    public init(data: Data, name: String, contentType: ContentType) {
+    public init(data: Data, contentType: ContentType, name: String) {
         self.data = data
-        self.name = name
         self.contentType = contentType
+        self.name = name
     }
 }
