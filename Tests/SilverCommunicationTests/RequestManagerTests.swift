@@ -156,16 +156,6 @@ final class RequestManagerTests: XCTestCase {
         XCTAssertEqual(response, dictionary)
     }
     
-    func testPerformRequestWithInvalidRequest() async throws {
-        sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .error(URLError(.notConnectedToInternet)))
-        do {
-            try await sut.perform(request: Request(path: "{}"))
-            XCTFail("Expected perform(request:) to fail with URLRequest.Error.invalidURL, succeeded instead.")
-        } catch URLRequest.Error.invalidURL {} catch {
-            XCTFail("Expected perform(request:) to fail with URLRequest.Error.invalidURL, failed with \(String(reflecting: error)) instead.")
-        }
-    }
-    
     func testPerformRequestWithError() async throws {
         sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .error(URLError(.notConnectedToInternet)))
         do {

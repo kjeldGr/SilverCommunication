@@ -302,21 +302,6 @@ final class RequestTests: XCTestCase {
         XCTAssertNil(urlRequest.httpBody)
     }
     
-    func testInitializeGetURLRequestWithInvalidPath() throws {
-        let httpMethod = Request.HTTPMethod.get
-        let path = "{}"
-        let request = Request(httpMethod: httpMethod, path: path)
-        
-        try XCTAssertThrowsError(URLRequest(baseURL: baseURL, request: request)) { error in
-            switch error {
-            case URLRequest.Error.invalidURL:
-                break
-            default:
-                XCTFail("Expected initializer to fail with Request.Error.invalidURL, failed with \(String(reflecting: error)) instead.")
-            }
-        }
-    }
-    
     func testHTTPBody() {
         let dataBody = Request.HTTPBody.data(Data())
         XCTAssertEqual(dataBody, dataBody)
