@@ -1,5 +1,5 @@
 //
-//  MultipartFile+UIImage.swift
+//  MultipartFile+Image.swift
 //  
 //
 //  Created by Kjeld Groot on 30/11/2023.
