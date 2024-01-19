@@ -16,7 +16,7 @@ public extension UIImage {
         let compressionQuality = CGFloat(bytes) / CGFloat(data.count)
         if compressionQuality >= 1 {
             return data
-        } else if compressionQuality < 0.1 {
+        } else if compressionQuality <= 0 {
             return nil
         } else {
             return jpegData(compressionQuality: compressionQuality)
