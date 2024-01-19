@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'SilverCommunication'
-  s.version          = '0.10.0'
+  s.version          = '0.11.0'
   s.summary          = 'Provides convenience for server communication.'
 
   s.description      = <<-DESC
