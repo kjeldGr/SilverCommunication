@@ -85,7 +85,7 @@ public struct Request {
     
     // MARK: - Internal properties
     
-    let bodyParser: any Parser<Data>
+    private(set) var bodyParser: any Parser<Data>
     
     // MARK: - Initializers
     
@@ -130,6 +130,10 @@ public struct Request {
     mutating func append(headers: [Header: String]?) {
         guard let headers else { return }
         self.headers = headers.merging(self.headers ?? [:]) { _, new in new }
+    }
+    
+    mutating func set<P: Parser<Data>>(bodyParser: P) {
+        self.bodyParser = bodyParser
     }
 }
 
