@@ -24,31 +24,9 @@ extension URLRequest {
               var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
             throw Error.invalidURL
         }
-        let headers: [Request.Header: String]?
-        let httpBody: Data?
-        switch request.body {
-        case let .data(data):
-            headers = request.headers
-            httpBody = data
-        case let .dictionary(dictionary):
-            headers = [
-                .contentType: "application/json"
-            ].merging(request.headers ?? [:]) { _, new in new }
-            httpBody = try JSONSerialization.data(withJSONObject: dictionary)
-        case let .encodable(encodable, encoder):
-            headers = [
-                .contentType: "application/json"
-            ].merging(request.headers ?? [:]) { _, new in new }
-            httpBody = try encoder.encode(encodable)
-        case let .multipart(body):
-            headers = [
-                .contentType: "multipart/form-data; boundary=\(body.boundary)"
-            ].merging(request.headers ?? [:]) { _, new in new }
-            httpBody = body.httpBody
-        case .none:
-            headers = request.headers
-            httpBody = nil
-        }
+        var request = request
+        request.append(headers: request.body?.additionalHeaders)
+        
         let queryItems = request.parameters?.map { URLQueryItem(name: $0.key, value: "\($0.value)") }
         if let componentsQueryItems = urlComponents.queryItems {
             urlComponents.queryItems = componentsQueryItems + (queryItems ?? [])
@@ -67,9 +45,13 @@ extension URLRequest {
             throw Error.invalidURL
         }
         
+        let httpBody = try request.body.flatMap {
+            try request.bodyParser.parse(data: $0.httpBody())
+        }
+        
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = request.httpMethod.rawValue
-        urlRequest.allHTTPHeaderFields = headers
+        urlRequest.allHTTPHeaderFields = request.headers
         urlRequest.httpBody = httpBody
         self = urlRequest
     }

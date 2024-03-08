@@ -20,6 +20,7 @@ public final class RequestManager: ObservableObject {
     // MARK: - Public properties
     
     public let baseURL: URL
+    public let defaultHeaders: [Request.Header: String]?
     
     // MARK: - Internal properties
     
@@ -30,17 +31,20 @@ public final class RequestManager: ObservableObject {
     /// Initializer for testing purpose, enables the developer to mock the `URLSession`
     /// - Parameters:
     ///   - baseURL: The base url for the performed requests
-    public convenience init(baseURL: URL) {
-        self.init(baseURL: baseURL, urlSession: .shared)
+    ///   - defaultHeaders: These headers will be added to all requests, performed by this `RequestManager`
+    public convenience init(baseURL: URL, defaultHeaders: [Request.Header: String]? = nil) {
+        self.init(baseURL: baseURL, urlSession: .shared, defaultHeaders: defaultHeaders)
     }
     
     /// Initializer for testing purpose, enables the developer to mock the `URLSession`
     /// - Parameters:
     ///   - baseURL: The base url for the performed requests
     ///   - urlSession: The url session used to create data tasks
-    init(baseURL: URL, urlSession: URLSession) {
+    ///   - defaultHeaders: These headers will be added to all requests, performed by this `RequestManager`
+    init(baseURL: URL, urlSession: URLSession, defaultHeaders: [Request.Header: String]?) {
         self.baseURL = baseURL
         self.urlSession = urlSession
+        self.defaultHeaders = defaultHeaders
     }
     
     // MARK: - RequestManager
@@ -58,6 +62,8 @@ public final class RequestManager: ObservableObject {
         callbackQueue: DispatchQueue = .main,
         completion: @escaping (Result<Data, Error>) -> Void
     ) -> URLSessionTask? {
+        var request = request
+        request.append(headers: defaultHeaders)
         let urlRequest: URLRequest
         do {
             urlRequest = try URLRequest(baseURL: baseURL, request: request)
