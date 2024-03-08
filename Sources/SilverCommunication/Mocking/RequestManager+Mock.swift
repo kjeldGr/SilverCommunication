@@ -10,10 +10,10 @@ import Foundation
 public extension RequestManager {
     convenience init(
         baseURL: URL,
-        mockingMethod: MockingMethod
+        mockingMethod: MockingMethod,
+        defaultHeaders: [Request.Header: String]? = nil
     ) {
         let urlSession = URLSessionMock(mockingMethod: mockingMethod)
-        self.init(baseURL: baseURL, urlSession: urlSession)
+        self.init(baseURL: baseURL, urlSession: urlSession, defaultHeaders: defaultHeaders)
     }
-    
 }

@@ -12,7 +12,7 @@ public enum ParserError: Error {
     case invalidData(Data)
 }
 
-public protocol Parser {
+public protocol Parser<ResultType> {
     associatedtype ResultType
     
     func parse(data: Data) throws -> ResultType
