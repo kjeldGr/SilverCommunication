@@ -120,19 +120,19 @@ public struct Request {
         self.bodyParser = bodyParser
     }
     
-    // MARK: - Internal methods
+    // MARK: - Public methods
     
-    mutating func append(parameters: [String: Any]?) {
+    public mutating func append(parameters: [String: Any]?) {
         guard let parameters else { return }
         self.parameters = parameters.merging(self.parameters ?? [:]) { _, new in new }
     }
     
-    mutating func append(headers: [Header: String]?) {
+    public mutating func append(headers: [Header: String]?) {
         guard let headers else { return }
         self.headers = headers.merging(self.headers ?? [:]) { _, new in new }
     }
     
-    mutating func set<P: Parser<Data>>(bodyParser: P) {
+    public mutating func set<P: Parser<Data>>(bodyParser: P) {
         self.bodyParser = bodyParser
     }
 }
