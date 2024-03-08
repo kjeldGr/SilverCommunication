@@ -62,7 +62,7 @@ final class RequestManagerTests: XCTestCase {
         XCTAssertEqual(sut.urlSession, .shared)
         
         let customURLSession = URLSession(configuration: .default)
-        sut = RequestManager(baseURL: baseURL, urlSession: customURLSession)
+        sut = RequestManager(baseURL: baseURL, urlSession: customURLSession, defaultHeaders: nil)
         XCTAssertEqual(sut.baseURL, baseURL)
         XCTAssertEqual(sut.urlSession, customURLSession)
     }
