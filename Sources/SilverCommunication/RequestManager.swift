@@ -52,7 +52,17 @@ public final class RequestManager: ObservableObject {
     /// Append new headers to the default headers used by this `RequestManager`. New headers with keys that already exist will override the existing headers.
     /// - Parameter headers: The headers to append to the default headers.
     public func appendDefaultHeaders(_ headers: [Request.Header: String]) {
-        self.defaultHeaders?.merge(headers) { _, new in new }
+        if let defaultHeaders {
+            self.defaultHeaders = defaultHeaders.merging(headers) { _, new in new }
+        } else {
+            self.defaultHeaders = headers
+        }
+    }
+    
+    /// Remove header from the default headers used by this `RequestManager`.
+    /// - Parameter key: The key to remove from the default headers
+    public func removeDefaultHeader(key: Request.Header) {
+        self.defaultHeaders?.removeValue(forKey: key)
     }
     
     /// Perform a `Request` and execute the passed completion with the data received in the request response, parsed to the passed `Response` type
