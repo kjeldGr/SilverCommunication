@@ -20,7 +20,7 @@ public final class RequestManager: ObservableObject {
     // MARK: - Public properties
     
     public let baseURL: URL
-    public let defaultHeaders: [Request.Header: String]?
+    public private(set) var defaultHeaders: [Request.Header: String]?
     
     // MARK: - Internal properties
     
@@ -48,6 +48,12 @@ public final class RequestManager: ObservableObject {
     }
     
     // MARK: - RequestManager
+    
+    /// Append new headers to the default headers used by this `RequestManager`. New headers with keys that already exist will override the existing headers.
+    /// - Parameter headers: The headers to append to the default headers.
+    public func appendDefaultHeaders(_ headers: [Request.Header: String]) {
+        self.defaultHeaders?.merge(headers) { _, new in new }
+    }
     
     /// Perform a `Request` and execute the passed completion with the data received in the request response, parsed to the passed `Response` type
     /// - Parameters:
