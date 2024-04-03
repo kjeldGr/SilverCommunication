@@ -5,10 +5,16 @@
 //  Created by Kjeld Groot on 31/03/2024.
 //
 
-import Foundation
-
 public struct Response<ContentType> {
-    let statusCode: Int
-    let headers: [AnyHashable: Any]
-    let content: ContentType
+    public let statusCode: Int
+    public let headers: [AnyHashable: Any]
+    public let content: ContentType
+    
+    // MARK: - Initializers
+    
+    public init(statusCode: Int, headers: [AnyHashable : Any], content: ContentType) {
+        self.statusCode = statusCode
+        self.headers = headers
+        self.content = content
+    }
 }
