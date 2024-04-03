@@ -76,7 +76,7 @@ public final class RequestManager: ObservableObject {
         request: Request,
         validators: [ResponseValidator] = [StatusCodeValidator()],
         callbackQueue: DispatchQueue = .main,
-        completion: @escaping (Result<Data, Error>) -> Void
+        completion: @escaping (Result<Response<Data>, Error>) -> Void
     ) -> URLSessionTask? {
         var request = request
         request.append(headers: defaultHeaders)
@@ -104,7 +104,7 @@ public final class RequestManager: ObservableObject {
                     guard let data else {
                         throw RequestManagerError.missingData
                     }
-                    completion(.success(data))
+                    completion(.success(Response(statusCode: response.statusCode, headers: response.allHeaderFields, content: data)))
                 } catch {
                     completion(.failure(error))
                 }
@@ -127,13 +127,13 @@ public final class RequestManager: ObservableObject {
         validators: [ResponseValidator] = [StatusCodeValidator()],
         parser: P,
         callbackQueue: DispatchQueue = .main,
-        completion: @escaping (Result<P.ResultType, Error>) -> Void
+        completion: @escaping (Result<Response<P.ResultType>, Error>) -> Void
     ) -> URLSessionTask? {
         perform(request: request, validators: validators, callbackQueue: callbackQueue) { result in
             do {
                 switch result {
-                case let .success(data):
-                    completion(.success(try parser.parse(data: data)))
+                case let .success(response):
+                    completion(.success(try parser.parse(response: response)))
                 case let .failure(error):
                     throw error
                 }
@@ -152,7 +152,7 @@ public final class RequestManager: ObservableObject {
     public func perform(
         request: Request,
         validators: [ResponseValidator] = [StatusCodeValidator()]
-    ) async throws -> Data {
+    ) async throws -> Response<Data> {
         try await withCheckedThrowingContinuation { continuation in
             perform(request: request, validators: validators) { result in
                 continuation.resume(with: result)
@@ -170,8 +170,8 @@ public final class RequestManager: ObservableObject {
         request: Request,
         validators: [ResponseValidator] = [StatusCodeValidator()],
         parser: P
-    ) async throws -> P.ResultType {
-        try await parser.parse(data: perform(request: request, validators: validators))
+    ) async throws -> Response<P.ResultType> {
+        try await parser.parse(response: perform(request: request, validators: validators))
     }
     
 }

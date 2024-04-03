@@ -12,7 +12,7 @@ import XCTest
 protocol TestableParser: Parser {
     associatedtype TestableResultType: Equatable
     
-    func parse(data: Data) throws -> TestableResultType
+    func parse(response: Response<Data>) throws -> Response<TestableResultType>
 }
 
 class ParserTestCase<P: TestableParser>: XCTestCase {
@@ -40,12 +40,12 @@ class ParserTestCase<P: TestableParser>: XCTestCase {
     
     func testParseData() throws {
         let data = try JSONSerialization.data(withJSONObject: result!)
-        XCTAssertEqual(try sut.parse(data: data), result)
+        XCTAssertEqual(try sut.parse(response: Response(statusCode: 200, headers: [:], content: data)).content, result)
     }
     
     func testParseDataWithInvalidData() throws {
         let data = try JSONSerialization.data(withJSONObject: invalidResult!)
-        try XCTAssertThrowsError(sut.parse(data: data)) { error in
+        try XCTAssertThrowsError(sut.parse(response: Response(statusCode: 200, headers: [:], content: data)).content) { error in
             switch error {
             case let ParserError.invalidData(parserData):
                 XCTAssertEqual(data, parserData)
@@ -57,12 +57,12 @@ class ParserTestCase<P: TestableParser>: XCTestCase {
     
     func testParseDataWithKeyPath() throws {
         let data = try JSONSerialization.data(withJSONObject: ["keyPath": result])
-        try XCTAssertEqual(sut.parse(data: data), result)
+        try XCTAssertEqual(sut.parse(response: Response(statusCode: 200, headers: [:], content: data)).content, result)
     }
     
     func testParseDataWithKeyPathWithInvalidData() throws {
         let data = try JSONSerialization.data(withJSONObject: ["keyPath": invalidResult])
-        try XCTAssertThrowsError(sut.parse(data: data)) { error in
+        try XCTAssertThrowsError(sut.parse(response: Response(statusCode: 200, headers: [:], content: data))) { error in
             switch error {
             case let ParserError.invalidData(parserData):
                 XCTAssertEqual(data, parserData)
@@ -74,7 +74,7 @@ class ParserTestCase<P: TestableParser>: XCTestCase {
     
     func testParseDataWithInvalidKeypath() throws {
         let data = try JSONSerialization.data(withJSONObject: ["keyPath": result])
-        try XCTAssertThrowsError(sut.parse(data: data)) { error in
+        try XCTAssertThrowsError(sut.parse(response: Response(statusCode: 200, headers: [:], content: data))) { error in
             switch error {
             case ParserError.missingData:
                 break

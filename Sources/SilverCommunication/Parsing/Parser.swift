@@ -15,5 +15,5 @@ public enum ParserError: Error {
 public protocol Parser<ResultType> {
     associatedtype ResultType
     
-    func parse(data: Data) throws -> ResultType
+    func parse(response: Response<Data>) throws -> Response<ResultType>
 }
