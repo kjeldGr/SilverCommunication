@@ -23,23 +23,25 @@ public struct DecodableParser<ResultType: Decodable>: Parser {
     
     // MARK: - Parser
     
-    public func parse(data: Data) throws -> ResultType {
-        var data = data
+    public func parse(response: Response<Data>) throws -> Response<ResultType> {
+        let content: ResultType
         if let keyPath = keyPath {
-            let dictionary = try NSDictionary(dictionary: DictionaryParser().parse(data: data))
+            let dictionary = try NSDictionary(dictionary: DictionaryParser().parse(response: response).content)
             switch dictionary.value(forKeyPath: keyPath) {
             case let value as ResultType:
-                return value
+                content = value
             case let value as [AnyHashable: Any]:
-                data = try JSONSerialization.data(withJSONObject: value)
+                content = try jsonDecoder.decode(ResultType.self, from: JSONSerialization.data(withJSONObject: value))
             case let value as [Any]:
-                data = try JSONSerialization.data(withJSONObject: value)
+                content = try jsonDecoder.decode(ResultType.self, from: JSONSerialization.data(withJSONObject: value))
             case .some:
-                throw ParserError.invalidData(data)
+                throw ParserError.invalidData(response.content)
             case .none:
                 throw ParserError.missingData
             }
+        } else {
+            content = try jsonDecoder.decode(ResultType.self, from: response.content)
         }
-        return try jsonDecoder.decode(ResultType.self, from: data)
+        return Response(statusCode: response.statusCode, headers: response.headers, content: content)
     }
 }

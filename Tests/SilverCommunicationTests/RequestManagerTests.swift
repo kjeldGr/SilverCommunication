@@ -68,24 +68,24 @@ final class RequestManagerTests: XCTestCase {
     }
     
     func testPerformRequest() async throws {
-        let responseData = try await sut.perform(request: request)
-        XCTAssertEqual(responseData, data)
+        let response = try await sut.perform(request: request)
+        XCTAssertEqual(response.content, data)
     }
     
     func testPerformRequestWithParser() async throws {
         let response = try await sut.perform(request: request, parser: DictionaryParser<String, String>())
         let dictionary = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: String])
-        XCTAssertEqual(response, dictionary)
+        XCTAssertEqual(response.content, dictionary)
     }
     
     func testPerformRequestWithCompletionHandler() async throws {
-        let responseData = try await withCheckedThrowingContinuation { continuation in
+        let response = try await withCheckedThrowingContinuation { continuation in
             sut.perform(request: request) { result in
                 XCTAssert(Thread.isMainThread)
                 continuation.resume(with: result)
             }
         }
-        XCTAssertEqual(responseData, data)
+        XCTAssertEqual(response.content, data)
     }
     
     func testPerformRequestWithErrorWithCompletionHandler() async throws {
@@ -105,7 +105,7 @@ final class RequestManagerTests: XCTestCase {
     
     func testPerformRequestWithCompletionHandlerOnDifferentThread() async throws {
         let dispatchQueue = DispatchQueue(label: "Test")
-        let responseData = try await withCheckedThrowingContinuation { continuation in
+        let response = try await withCheckedThrowingContinuation { continuation in
             sut.perform(request: request, callbackQueue: dispatchQueue) { result in
                 XCTAssertFalse(Thread.isMainThread)
                 DispatchQueue.main.async {
@@ -113,7 +113,7 @@ final class RequestManagerTests: XCTestCase {
                 }
             }
         }
-        XCTAssertEqual(responseData, data)
+        XCTAssertEqual(response.content, data)
     }
     
     func testPerformRequestWithCompletionHandlerWithParser() async throws {
@@ -124,7 +124,7 @@ final class RequestManagerTests: XCTestCase {
             }
         }
         let dictionary = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: String])
-        XCTAssertEqual(response, dictionary)
+        XCTAssertEqual(response.content, dictionary)
     }
     
     func testPerformRequestWithErrorWithCompletionHandlerWithParser() async throws {
@@ -153,7 +153,7 @@ final class RequestManagerTests: XCTestCase {
             }
         }
         let dictionary = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: String])
-        XCTAssertEqual(response, dictionary)
+        XCTAssertEqual(response.content, dictionary)
     }
     
     func testPerformRequestWithError() async throws {
@@ -201,7 +201,7 @@ final class RequestManagerTests: XCTestCase {
         let json = try await sut.perform(
             request: request,
             parser: DictionaryParser<String, String>()
-        )
+        ).content
         XCTAssertEqual(json["mockingMethod"], "data")
     }
     
@@ -213,7 +213,7 @@ final class RequestManagerTests: XCTestCase {
         let json = try await sut.perform(
             request: request,
             parser: DictionaryParser<String, String>()
-        )
+        ).content
         XCTAssertEqual(json["mockingMethod"], "bundle")
         
         sut = RequestManager(
@@ -236,7 +236,7 @@ final class RequestManagerTests: XCTestCase {
         let json = try await sut.perform(
             request: request,
             parser: DictionaryParser<String, String>()
-        )
+        ).content
         XCTAssertEqual(json["mockingMethod"], "file")
         
         sut = RequestManager(
@@ -259,7 +259,7 @@ final class RequestManagerTests: XCTestCase {
         let json = try await sut.perform(
             request: request,
             parser: DictionaryParser<String, String>()
-        )
+        ).content
         XCTAssertEqual(json["mockingMethod"], "encodable")
     }
 }
