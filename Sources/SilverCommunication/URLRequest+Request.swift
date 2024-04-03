@@ -45,14 +45,10 @@ extension URLRequest {
             throw Error.invalidURL
         }
         
-        let httpBody = try request.body.flatMap {
-            try request.bodyParser.parse(data: $0.httpBody())
-        }
-        
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = request.httpMethod.rawValue
         urlRequest.allHTTPHeaderFields = request.headers
-        urlRequest.httpBody = httpBody
+        urlRequest.httpBody = try request.body?.httpBody()
         self = urlRequest
     }
 }

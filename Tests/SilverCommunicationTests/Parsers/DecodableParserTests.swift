@@ -39,7 +39,7 @@ final class DecodableParserTests: ParserTestCase<DecodableParser<[String: String
         let sut = DecodableParser<CodableObject>(keyPath: "keyPath")
         let data = try JSONSerialization.data(withJSONObject: ["keyPath": result])
         try XCTAssertEqual(
-            sut.parse(data: data),
+            sut.parse(response: Response(statusCode: 200, headers: [:], content: data)).content,
             JSONDecoder().decode(
                 CodableObject.self,
                 from: JSONSerialization.data(withJSONObject: result!)
@@ -49,7 +49,7 @@ final class DecodableParserTests: ParserTestCase<DecodableParser<[String: String
     
     override func testParseDataWithInvalidData() throws {
         let data = try JSONSerialization.data(withJSONObject: invalidResult!)
-        try XCTAssertThrowsError(sut.parse(data: data)) { error in
+        try XCTAssertThrowsError(sut.parse(response: Response(statusCode: 200, headers: [:], content: data))) { error in
             switch error {
             case DecodingError.typeMismatch:
                 break
@@ -62,7 +62,7 @@ final class DecodableParserTests: ParserTestCase<DecodableParser<[String: String
     override func testParseDataWithKeyPathWithInvalidData() throws {
         sut = DecodableParser(keyPath: "keyPath")
         let data = try JSONSerialization.data(withJSONObject: ["keyPath": invalidResult!])
-        try XCTAssertThrowsError(sut.parse(data: data)) { error in
+        try XCTAssertThrowsError(sut.parse(response: Response(statusCode: 200, headers: [:], content: data))) { error in
             switch error {
             case DecodingError.typeMismatch:
                 break
@@ -97,9 +97,9 @@ final class DecodableParserTests: ParserTestCase<DecodableParser<[String: String
         encoder.dateEncodingStrategy = .formatted(dateFormatter)
         
         let data = try encoder.encode(result)
-        try XCTAssertEqual(sut.parse(data: data).object, result.object)
+        try XCTAssertEqual(sut.parse(response: Response(statusCode: 200, headers: [:], content: data)).content.object, result.object)
         try XCTAssertEqual(
-            sut.parse(data: data).creationDate.timeIntervalSince1970,
+            sut.parse(response: Response(statusCode: 200, headers: [:], content: data)).content.creationDate.timeIntervalSince1970,
             result.creationDate.timeIntervalSince1970,
             accuracy: 0.001
         )

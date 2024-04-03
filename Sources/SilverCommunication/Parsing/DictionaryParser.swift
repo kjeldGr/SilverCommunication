@@ -21,21 +21,21 @@ public struct DictionaryParser<Key: Hashable, Value>: Parser {
     
     // MARK: - Parser
     
-    public func parse(data: Data) throws -> [Key: Value] {
-        guard let rootDictionary = try JSONSerialization.jsonObject(with: data) as? [AnyHashable: Any] else {
-            throw ParserError.invalidData(data)
+    public func parse(response: Response<Data>) throws -> Response<[Key: Value]> {
+        guard let rootDictionary = try JSONSerialization.jsonObject(with: response.content) as? [AnyHashable: Any] else {
+            throw ParserError.invalidData(response.content)
         }
-        var result: Any?
+        var content: Any?
         if let keyPath {
-            result = NSDictionary(dictionary: rootDictionary).value(forKeyPath: keyPath)
+            content = NSDictionary(dictionary: rootDictionary).value(forKeyPath: keyPath)
         } else {
-            result = rootDictionary
+            content = rootDictionary
         }
-        switch result {
-        case let dictionary as ResultType:
-            return dictionary
+        switch content {
+        case let content as ResultType:
+            return Response(statusCode: response.statusCode, headers: response.headers, content: content)
         case .some:
-            throw ParserError.invalidData(data)
+            throw ParserError.invalidData(response.content)
         case .none:
             throw ParserError.missingData
         }

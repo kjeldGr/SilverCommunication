@@ -83,10 +83,6 @@ public struct Request {
     public private(set) var headers: [Header: String]?
     public let body: HTTPBody?
     
-    // MARK: - Internal properties
-    
-    private(set) var bodyParser: any Parser<Data>
-    
     // MARK: - Initializers
     
     public init(
@@ -101,23 +97,6 @@ public struct Request {
         self.parameters = parameters
         self.headers = headers
         self.body = body
-        self.bodyParser = FixedDataParser()
-    }
-    
-    public init<P: Parser<Data>>(
-        httpMethod: HTTPMethod = .get,
-        path: String,
-        parameters: [String: Any]? = nil,
-        headers: [Header: String]? = nil,
-        body: HTTPBody? = nil,
-        bodyParser: P
-    ) {
-        self.httpMethod = httpMethod
-        self.path = path
-        self.parameters = parameters
-        self.headers = headers
-        self.body = body
-        self.bodyParser = bodyParser
     }
     
     // MARK: - Public methods
@@ -131,10 +110,6 @@ public struct Request {
         guard let headers else { return }
         self.headers = headers.merging(self.headers ?? [:]) { _, new in new }
     }
-    
-    public mutating func set<P: Parser<Data>>(bodyParser: P) {
-        self.bodyParser = bodyParser
-    }
 }
 
 public extension Request.Header {
@@ -143,8 +118,4 @@ public extension Request.Header {
     static let contentType: String = "Content-Type"
     static let language: String = "Accept-Language"
     static let userAgent: String = "User-Agent"
-}
-
-private struct FixedDataParser: Parser {
-    func parse(data: Data) throws -> Data { data }
 }

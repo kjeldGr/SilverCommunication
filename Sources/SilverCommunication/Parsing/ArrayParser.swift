@@ -21,20 +21,19 @@ public struct ArrayParser<Element>: Parser {
     
     // MARK: - Parser
     
-    public func parse(data: Data) throws -> [Element] {
-        var result: Any?
+    public func parse(response: Response<Data>) throws -> Response<[Element]> {
+        var content: Any?
         if let keyPath {
-            result = try NSDictionary(
-                dictionary: DictionaryParser().parse(data: data)
-            ).value(forKeyPath: keyPath)
+            let dictionary = try NSDictionary(dictionary: DictionaryParser().parse(response: response).content)
+            content = dictionary.value(forKeyPath: keyPath)
         } else {
-            result = try JSONSerialization.jsonObject(with: data)
+            content = try JSONSerialization.jsonObject(with: response.content)
         }
-        switch result {
-        case let array as [Element]:
-            return array
+        switch content {
+        case let content as [Element]:
+            return Response(statusCode: response.statusCode, headers: response.headers, content: content)
         case .some:
-            throw ParserError.invalidData(data)
+            throw ParserError.invalidData(response.content)
         case .none:
             throw ParserError.missingData
         }
