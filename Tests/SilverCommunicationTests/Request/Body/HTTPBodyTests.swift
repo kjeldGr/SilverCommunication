@@ -15,7 +15,7 @@ final class HTTPBodyTests: XCTestCase {
     func testConvenienceInitializers() throws {
         let data = Data("test".utf8)
         sut = HTTPBody(data: data)
-        XCTAssertEqual(sut.contentType, .octetStream())
+        XCTAssertEqual(sut.contentType, .octetStream)
         XCTAssertEqual(sut.data, data)
         
         sut = HTTPBody(data: data, contentType: .json)

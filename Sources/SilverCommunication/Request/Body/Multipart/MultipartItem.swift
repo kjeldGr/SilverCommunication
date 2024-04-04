@@ -48,20 +48,16 @@ extension MultipartItem {
 
 private extension ContentType {
     var multipartData: Data {
-        return Data("Content-Type: \(rawValue)".utf8)
+        return Data("Content-Type: \(headerValue)".utf8)
     }
     var fileExtension: String? {
         switch self {
-        case let .custom(_, fileExtension?):
-            return fileExtension
         case .imageJPEG:
             return "jpg"
         case .imagePNG:
             return "png"
         case .json:
             return "json"
-        case let .octetStream(fileExtension?):
-            return fileExtension
         case .text:
             return "txt"
         case .custom, .multipart, .octetStream:

@@ -11,7 +11,7 @@ public enum HTTPBody: Equatable {
     case binary(Binary)
     case multipart(MultipartRequestBody)
     
-    public init(data: Data, contentType: ContentType = .octetStream()) {
+    public init(data: Data, contentType: ContentType = .octetStream) {
         self = .binary(Binary(data: data, contentType: contentType))
     }
     

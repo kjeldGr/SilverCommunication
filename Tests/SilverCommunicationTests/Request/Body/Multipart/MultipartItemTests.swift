@@ -19,18 +19,11 @@ final class MultipartItemTests: XCTestCase {
             MultipartItem(content: Data("text".utf8), name: "name", filename: nil, contentType: nil).data
         )
         
-        var binary = Binary(data: Data("text".utf8), contentType: .custom(rawValue: "Custom"))
+        var binary = Binary(data: Data("text".utf8), contentType: .custom(headerValue: "Custom"))
         sut = MultipartItem(binary: binary, name: "name")
         XCTAssertEqual(
             sut.data,
             MultipartItem(content: binary.data, name: "name", filename: "name", contentType: binary.contentType).data
-        )
-        
-        binary = Binary(data: Data("text".utf8), contentType: .custom(rawValue: "Custom", fileExtension: "pdf"))
-        sut = MultipartItem(binary: binary, name: "name")
-        XCTAssertEqual(
-            sut.data,
-            MultipartItem(content: binary.data, name: "name", filename: "name.pdf", contentType: binary.contentType).data
         )
         
         binary = Binary(data: Data("text".utf8), contentType: .imageJPEG)
@@ -61,18 +54,11 @@ final class MultipartItemTests: XCTestCase {
             MultipartItem(content: binary.data, name: "name", filename: "name", contentType: binary.contentType).data
         )
         
-        binary = Binary(data: Data("text".utf8), contentType: .octetStream())
+        binary = Binary(data: Data("text".utf8), contentType: .octetStream)
         sut = MultipartItem(binary: binary, name: "name")
         XCTAssertEqual(
             sut.data,
             MultipartItem(content: binary.data, name: "name", filename: "name", contentType: binary.contentType).data
-        )
-        
-        binary = Binary(data: Data("text".utf8), contentType: .octetStream(fileExtension: "csv"))
-        sut = MultipartItem(binary: binary, name: "name")
-        XCTAssertEqual(
-            sut.data,
-            MultipartItem(content: binary.data, name: "name", filename: "name.csv", contentType: binary.contentType).data
         )
         
         binary = Binary(data: Data("text".utf8), contentType: .text)

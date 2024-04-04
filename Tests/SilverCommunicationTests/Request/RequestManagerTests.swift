@@ -72,17 +72,17 @@ final class RequestManagerTests: XCTestCase {
     func testDefaultHeaders() {
         XCTAssertNil(sut.defaultHeaders)
         
-        sut.appendDefaultHeader(key: .contentType, value: ContentType.json.rawValue)
-        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.json.rawValue])
+        sut.appendDefaultHeader(key: .contentType, value: ContentType.json.headerValue)
+        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.json.headerValue])
         
-        sut.appendDefaultHeader(key: .contentType, value: ContentType.imageJPEG.rawValue, override: false)
-        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.json.rawValue])
+        sut.appendDefaultHeader(key: .contentType, value: ContentType.imageJPEG.headerValue, override: false)
+        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.json.headerValue])
         
-        sut.appendDefaultHeader(key: .contentType, value: ContentType.imageJPEG.rawValue, override: true)
-        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.imageJPEG.rawValue])
+        sut.appendDefaultHeader(key: .contentType, value: ContentType.imageJPEG.headerValue, override: true)
+        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.imageJPEG.headerValue])
         
         sut.appendDefaultHeader(key: .language, value: "en-US")
-        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.imageJPEG.rawValue, .language: "en-US"])
+        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.imageJPEG.headerValue, .language: "en-US"])
         
         sut.removeDefaultHeader(key: .contentType)
         XCTAssertEqual(sut.defaultHeaders, [.language: "en-US"])

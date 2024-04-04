@@ -26,7 +26,7 @@ extension URLRequest {
         }
         var request = request
         if let contentType = request.body?.contentType {
-            request.appendHeader(key: .contentType, value: contentType.rawValue, override: false)
+            request.appendHeader(key: .contentType, value: contentType.headerValue, override: false)
         }
         
         let queryItems = request.parameters?.map { URLQueryItem(name: $0.key, value: "\($0.value)") }

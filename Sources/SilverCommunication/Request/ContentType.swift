@@ -6,18 +6,18 @@
 //
 
 public enum ContentType: Equatable {
-    case custom(rawValue: String, fileExtension: String? = nil)
+    case custom(headerValue: String)
     case imageJPEG
     case imagePNG
     case json
     case multipart(boundary: String)
-    case octetStream(fileExtension: String? = nil)
+    case octetStream
     case text
     
-    public var rawValue: String {
+    public var headerValue: String {
         switch self {
-        case let .custom(rawValue, _):
-            return rawValue
+        case let .custom(headerValue):
+            return headerValue
         case .imageJPEG:
             return "image/jpeg"
         case .imagePNG:

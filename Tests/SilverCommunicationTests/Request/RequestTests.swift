@@ -195,7 +195,7 @@ final class RequestTests: XCTestCase {
         XCTAssertEqual(urlComponents.baseURL, baseURL)
         XCTAssertEqual(urlComponents.path, "/path")
         XCTAssertNil(urlComponents.queryItems)
-        XCTAssertEqual(urlRequest.allHTTPHeaderFields, [.contentType: ContentType.octetStream().rawValue])
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields, [.contentType: ContentType.octetStream.headerValue])
         XCTAssertEqual(urlRequest.httpMethod, httpMethod.rawValue)
         XCTAssertEqual(urlRequest.httpBody, data)
     }
@@ -336,17 +336,17 @@ final class RequestTests: XCTestCase {
         var sut = Request(httpMethod: .get, path: "path")
         XCTAssertNil(sut.headers)
         
-        sut.appendHeader(key: .contentType, value: ContentType.json.rawValue)
-        XCTAssertEqual(sut.headers, [.contentType: ContentType.json.rawValue])
+        sut.appendHeader(key: .contentType, value: ContentType.json.headerValue)
+        XCTAssertEqual(sut.headers, [.contentType: ContentType.json.headerValue])
         
         sut.appendHeader(key: .language, value: "en-US")
-        XCTAssertEqual(sut.headers, [.contentType: ContentType.json.rawValue, .language: "en-US"])
+        XCTAssertEqual(sut.headers, [.contentType: ContentType.json.headerValue, .language: "en-US"])
         
         sut.appendHeader(key: .language, value: "nl-NL", override: false)
-        XCTAssertEqual(sut.headers, [.contentType: ContentType.json.rawValue, .language: "en-US"])
+        XCTAssertEqual(sut.headers, [.contentType: ContentType.json.headerValue, .language: "en-US"])
         
         sut.appendHeader(key: .language, value: "nl-NL", override: true)
-        XCTAssertEqual(sut.headers, [.contentType: ContentType.json.rawValue, .language: "nl-NL"])
+        XCTAssertEqual(sut.headers, [.contentType: ContentType.json.headerValue, .language: "nl-NL"])
     }
 }
 
