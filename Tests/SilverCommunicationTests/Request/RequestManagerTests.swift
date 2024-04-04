@@ -21,11 +21,11 @@ final class RequestManagerTests: XCTestCase {
     private var request: Request!
     private var data: Data!
     private var bundle: Bundle {
-#if SWIFT_PACKAGE
+        #if SWIFT_PACKAGE
         return Bundle.module
-#else
+        #else
         return Bundle(for: Self.self)
-#endif
+        #endif
     }
     
     // MARK: - XCTestCase
@@ -66,6 +66,32 @@ final class RequestManagerTests: XCTestCase {
         XCTAssertEqual(sut.baseURL, baseURL)
         XCTAssertEqual(sut.urlSession, customURLSession)
     }
+    
+    // MARK: Default headers
+    
+    func testDefaultHeaders() {
+        XCTAssertNil(sut.defaultHeaders)
+        
+        sut.appendDefaultHeader(key: .contentType, value: ContentType.json.rawValue)
+        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.json.rawValue])
+        
+        sut.appendDefaultHeader(key: .contentType, value: ContentType.imageJPEG.rawValue, override: false)
+        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.json.rawValue])
+        
+        sut.appendDefaultHeader(key: .contentType, value: ContentType.imageJPEG.rawValue, override: true)
+        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.imageJPEG.rawValue])
+        
+        sut.appendDefaultHeader(key: .language, value: "en-US")
+        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.imageJPEG.rawValue, .language: "en-US"])
+        
+        sut.removeDefaultHeader(key: .contentType)
+        XCTAssertEqual(sut.defaultHeaders, [.language: "en-US"])
+        
+        sut.removeDefaultHeader(key: .language)
+        XCTAssertEqual(sut.defaultHeaders, [:])
+    }
+    
+    // MARK: Perform request
     
     func testPerformRequest() async throws {
         let response = try await sut.perform(request: request)
@@ -196,6 +222,8 @@ final class RequestManagerTests: XCTestCase {
             XCTFail("Expected perform(request:) to fail with RequestManagerError.noData, failed with \(String(reflecting: error)) instead.")
         }
     }
+    
+    // MARK: Mocking
     
     func testDataMocking() async throws {
         let json = try await sut.perform(

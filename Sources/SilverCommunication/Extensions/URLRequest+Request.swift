@@ -25,7 +25,9 @@ extension URLRequest {
             throw Error.invalidURL
         }
         var request = request
-        request.append(headers: request.body?.additionalHeaders)
+        if let contentType = request.body?.contentType {
+            request.appendHeader(key: .contentType, value: contentType.rawValue, override: false)
+        }
         
         let queryItems = request.parameters?.map { URLQueryItem(name: $0.key, value: "\($0.value)") }
         if let componentsQueryItems = urlComponents.queryItems {
@@ -48,7 +50,7 @@ extension URLRequest {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = request.httpMethod.rawValue
         urlRequest.allHTTPHeaderFields = request.headers
-        urlRequest.httpBody = try request.body?.httpBody()
+        urlRequest.httpBody = request.body?.data
         self = urlRequest
     }
 }

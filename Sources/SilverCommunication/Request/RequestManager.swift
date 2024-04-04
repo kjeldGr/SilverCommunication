@@ -51,11 +51,12 @@ public final class RequestManager: ObservableObject {
     
     /// Append new headers to the default headers used by this `RequestManager`. New headers with keys that already exist will override the existing headers.
     /// - Parameter headers: The headers to append to the default headers.
-    public func appendDefaultHeaders(_ headers: [Request.Header: String]) {
-        if let defaultHeaders {
-            self.defaultHeaders = defaultHeaders.merging(headers) { _, new in new }
-        } else {
-            self.defaultHeaders = headers
+    /// - Parameter key: The key to add to the default headers.
+    /// - Parameter value: The value to add to the default headers for the provided key
+    /// - Parameter override: Boolean to determine if the new header should override existing default headers when the key already exists.
+    public func appendDefaultHeader(key: Request.Header, value: String, override: Bool = true) {
+        self.defaultHeaders = [key: value].merging(self.defaultHeaders ?? [:]) { current, new in
+            override ? current : new
         }
     }
     
@@ -79,7 +80,11 @@ public final class RequestManager: ObservableObject {
         completion: @escaping (Result<Response<Data>, Error>) -> Void
     ) -> URLSessionTask? {
         var request = request
-        request.append(headers: defaultHeaders)
+        if let defaultHeaders {
+            defaultHeaders.forEach { key, value in
+                request.appendHeader(key: key, value: value, override: false)
+            }
+        }
         let urlRequest: URLRequest
         do {
             urlRequest = try URLRequest(baseURL: baseURL, request: request)
