@@ -8,32 +8,12 @@
 import Foundation
 
 public struct MultipartItem: Equatable {
-    let data: Data
-}
-
-extension MultipartItem {
-    public init(text: String, name: String) {
-        self.init(
-            data: Self.generateData(content: Data(text.utf8), name: name, contentType: nil, filename: nil)
-        )
-    }
+    public let content: Data
+    public let name: String
+    public let filename: String?
+    public let contentType: ContentType?
     
-    public init(binary: Binary, name: String) {
-        let filename = binary.contentType.fileExtension.flatMap { "\(name).\($0)" } ?? name
-        self.init(
-            data: Self.generateData(content: binary.data, name: name, contentType: binary.contentType, filename: filename)
-        )
-    }
-    
-    public init(binary: Binary, name: String, filename: String) {
-        self.init(
-            data: Self.generateData(content: binary.data, name: name, contentType: binary.contentType, filename: filename)
-        )
-    }
-    
-    // MARK: - Factory methods
-    
-    static func generateData(content: Data, name: String, contentType: ContentType?, filename: String?) -> Data {
+    var data: Data {
         var data = Data("Content-Disposition: form-data; name=\"\(name)\"".utf8)
         if let filename {
             data.append(Data("; filename=\"\(filename)\"".utf8))
@@ -48,6 +28,21 @@ extension MultipartItem {
         data.appendNewLine()
         
         return data
+    }
+}
+
+extension MultipartItem {
+    public init(text: String, name: String) {
+        self.init(content: Data(text.utf8), name: name, filename: nil, contentType: nil)
+    }
+    
+    public init(binary: Binary, name: String) {
+        let filename = binary.contentType.fileExtension.flatMap { "\(name).\($0)" } ?? name
+        self.init(content: binary.data, name: name, filename: filename, contentType: binary.contentType)
+    }
+    
+    public init(binary: Binary, name: String, filename: String) {
+        self.init(content: binary.data, name: name, filename: filename, contentType: binary.contentType)
     }
 }
 
