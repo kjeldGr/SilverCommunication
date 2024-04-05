@@ -222,7 +222,7 @@ final class RequestTests: XCTestCase {
     func testInitializeURLRequestWithRequestWithDictionaryBodyWithCustomContentType() throws {
         let httpMethod = Request.HTTPMethod.post
         let path = "path"
-        let headers = [Request.Header.contentType: "text/html"]
+        let headers = [HTTPHeader.contentType: "text/html"]
         let parameters = ["id": 1]
         let body = try HTTPBody(jsonObject: parameters)
         let request = Request(httpMethod: httpMethod, path: path, headers: headers, body: body)
@@ -266,7 +266,7 @@ final class RequestTests: XCTestCase {
     func testInitializeURLRequestWithRequestWithEncodableBodyWithCustomContentType() throws {
         let httpMethod = Request.HTTPMethod.post
         let path = "path"
-        let headers = [Request.Header.contentType: "text/html"]
+        let headers = [HTTPHeader.contentType: "text/html"]
         let encodable = CodableObject(id: "id", title: "title")
         let encoder = JSONEncoder()
         encoder.outputFormatting = .sortedKeys

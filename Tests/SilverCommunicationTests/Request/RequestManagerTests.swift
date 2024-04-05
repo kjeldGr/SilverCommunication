@@ -216,7 +216,7 @@ final class RequestManagerTests: XCTestCase {
     func testPerformRequestWithMissingData() async throws {
         sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .data(nil))
         do {
-            try await sut.perform(request: request)
+            _ = try await sut.perform(request: request, parser: DictionaryParser<String, String>())
             XCTFail("Expected perform(request:) to fail with RequestManagerError.noData, succeeded instead.")
         } catch RequestManagerError.missingData {} catch {
             XCTFail("Expected perform(request:) to fail with RequestManagerError.noData, failed with \(String(reflecting: error)) instead.")

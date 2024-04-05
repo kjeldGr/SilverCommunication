@@ -24,7 +24,7 @@ public struct StatusCodeValidator: ResponseValidator {
     
     // MARK: - ResponseValidator
     
-    public func validate(response: HTTPURLResponse) throws {
+    public func validate(response: Response<Data?>) throws {
         if !validStatusCodes.contains(response.statusCode) {
             throw StatusCodeValidatorError.invalidStatusCode(response.statusCode)
         }
