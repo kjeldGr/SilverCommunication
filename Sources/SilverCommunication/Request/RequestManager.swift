@@ -50,7 +50,6 @@ public final class RequestManager: ObservableObject {
     // MARK: - RequestManager
     
     /// Append new headers to the default headers used by this `RequestManager`. New headers with keys that already exist will override the existing headers.
-    /// - Parameter headers: The headers to append to the default headers.
     /// - Parameter key: The key to add to the default headers.
     /// - Parameter value: The value to add to the default headers for the provided key
     /// - Parameter override: Boolean to determine if the new header should override existing default headers when the key already exists.
@@ -150,7 +149,7 @@ public final class RequestManager: ObservableObject {
     /// - Parameters:
     ///   - request: The `Request` to perform
     ///   - validators: The `ResponseValidator`'s that will be used for response validation
-    /// - Returns: The data received in the request response
+    /// - Returns: The request response
     @discardableResult
     public func perform(
         request: Request,
