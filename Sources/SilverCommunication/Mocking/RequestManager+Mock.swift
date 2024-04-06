@@ -11,7 +11,7 @@ public extension RequestManager {
     convenience init(
         baseURL: URL,
         mockingMethod: MockingMethod,
-        defaultHeaders: [Request.Header: String]? = nil
+        defaultHeaders: [HTTPHeader: String]? = nil
     ) {
         let urlSession = URLSessionMock(mockingMethod: mockingMethod)
         self.init(baseURL: baseURL, urlSession: urlSession, defaultHeaders: defaultHeaders)

@@ -33,7 +33,7 @@ final class RequestTests: XCTestCase {
     
     // MARK: Tests
     
-    func testRequestInitializer() {
+    func testRequestInitializer() throws {
         let httpMethod = Request.HTTPMethod.get
         let path = "path"
         let request = Request(httpMethod: httpMethod, path: path)
@@ -50,7 +50,7 @@ final class RequestTests: XCTestCase {
         XCTAssertEqual(requestWithHeaders.headers, headers)
         XCTAssertNil(request.body)
         
-        let body = Request.HTTPBody.dictionary(["id": 1])
+        let body = try HTTPBody(jsonObject: ["id": 1])
         let requestWithHeadersAndContent = Request(
             httpMethod: httpMethod,
             path: path,
@@ -186,7 +186,7 @@ final class RequestTests: XCTestCase {
         let httpMethod = Request.HTTPMethod.post
         let path = "path"
         let data = Data("Test".utf8)
-        let request = Request(httpMethod: httpMethod, path: path, body: .data(data))
+        let request = Request(httpMethod: httpMethod, path: path, body: HTTPBody(data: data))
         
         let urlRequest = try URLRequest(baseURL: baseURL, request: request)
         let urlComponents = try XCTUnwrap(urlRequest.url.flatMap {
@@ -195,7 +195,7 @@ final class RequestTests: XCTestCase {
         XCTAssertEqual(urlComponents.baseURL, baseURL)
         XCTAssertEqual(urlComponents.path, "/path")
         XCTAssertNil(urlComponents.queryItems)
-        XCTAssertEqual(urlRequest.allHTTPHeaderFields, [:])
+        XCTAssertEqual(urlRequest.allHTTPHeaderFields, [.contentType: ContentType.octetStream.headerValue])
         XCTAssertEqual(urlRequest.httpMethod, httpMethod.rawValue)
         XCTAssertEqual(urlRequest.httpBody, data)
     }
@@ -204,7 +204,7 @@ final class RequestTests: XCTestCase {
         let httpMethod = Request.HTTPMethod.post
         let path = "path"
         let parameters = ["id": 1]
-        let body = Request.HTTPBody.dictionary(parameters)
+        let body = try HTTPBody(jsonObject: parameters)
         let request = Request(httpMethod: httpMethod, path: path, body: body)
         
         let urlRequest = try URLRequest(baseURL: baseURL, request: request)
@@ -222,9 +222,9 @@ final class RequestTests: XCTestCase {
     func testInitializeURLRequestWithRequestWithDictionaryBodyWithCustomContentType() throws {
         let httpMethod = Request.HTTPMethod.post
         let path = "path"
-        let headers = [Request.Header.contentType: "text/html"]
+        let headers = [HTTPHeader.contentType: "text/html"]
         let parameters = ["id": 1]
-        let body = Request.HTTPBody.dictionary(parameters)
+        let body = try HTTPBody(jsonObject: parameters)
         let request = Request(httpMethod: httpMethod, path: path, headers: headers, body: body)
         
         let urlRequest = try URLRequest(baseURL: baseURL, request: request)
@@ -243,7 +243,13 @@ final class RequestTests: XCTestCase {
         let httpMethod = Request.HTTPMethod.post
         let path = "path"
         let encodable = CodableObject(id: "id", title: "title")
-        let request = Request(httpMethod: httpMethod, path: path, body: .encodable(encodable))
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
+        let request = try Request(
+            httpMethod: httpMethod,
+            path: path,
+            body: HTTPBody(encodable: encodable, encoder: encoder)
+        )
         
         let urlRequest = try URLRequest(baseURL: baseURL, request: request)
         let urlComponents = try XCTUnwrap(urlRequest.url.flatMap {
@@ -254,15 +260,22 @@ final class RequestTests: XCTestCase {
         XCTAssertNil(urlComponents.queryItems)
         XCTAssertEqual(urlRequest.allHTTPHeaderFields, [.contentType: "application/json"])
         XCTAssertEqual(urlRequest.httpMethod, httpMethod.rawValue)
-        try XCTAssertEqual(urlRequest.httpBody, JSONEncoder().encode(encodable))
+        try XCTAssertEqual(urlRequest.httpBody, encoder.encode(encodable))
     }
     
     func testInitializeURLRequestWithRequestWithEncodableBodyWithCustomContentType() throws {
         let httpMethod = Request.HTTPMethod.post
         let path = "path"
-        let headers = [Request.Header.contentType: "text/html"]
+        let headers = [HTTPHeader.contentType: "text/html"]
         let encodable = CodableObject(id: "id", title: "title")
-        let request = Request(httpMethod: httpMethod, path: path, headers: headers, body: .encodable(encodable))
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
+        let request = try Request(
+            httpMethod: httpMethod,
+            path: path,
+            headers: headers,
+            body: HTTPBody(encodable: encodable, encoder: encoder)
+        )
         
         let urlRequest = try URLRequest(baseURL: baseURL, request: request)
         let urlComponents = try XCTUnwrap(urlRequest.url.flatMap {
@@ -273,7 +286,7 @@ final class RequestTests: XCTestCase {
         XCTAssertNil(urlComponents.queryItems)
         XCTAssertEqual(urlRequest.allHTTPHeaderFields, [.contentType: "text/html"])
         XCTAssertEqual(urlRequest.httpMethod, httpMethod.rawValue)
-        try XCTAssertEqual(urlRequest.httpBody, JSONEncoder().encode(encodable))
+        try XCTAssertEqual(urlRequest.httpBody, encoder.encode(encodable))
     }
     
     func testSlashIsAppendedToPath() throws {
@@ -302,25 +315,38 @@ final class RequestTests: XCTestCase {
         XCTAssertNil(urlRequest.httpBody)
     }
     
-    func testHTTPBody() {
-        let dataBody = Request.HTTPBody.data(Data())
-        XCTAssertEqual(dataBody, dataBody)
-        let otherDataBody = Request.HTTPBody.data(Data("Test".utf8))
-        XCTAssertNotEqual(dataBody, otherDataBody)
+    func testAppendParameter() {
+        var sut = Request(httpMethod: .get, path: "path")
+        XCTAssertNil(sut.parameters)
         
-        let dictionaryBody = Request.HTTPBody.dictionary(["Test": "Test"])
-        XCTAssertEqual(dictionaryBody, dictionaryBody)
-        let otherDictionaryBody = Request.HTTPBody.dictionary(["Test": "Other"])
-        XCTAssertNotEqual(dictionaryBody, otherDictionaryBody)
+        sut.appendParameter(key: "test", value: "test")
+        try XCTAssertEqual(XCTUnwrap(sut.parameters as? [String: String]), ["test": "test"])
         
-        let encodableBody = Request.HTTPBody.encodable(CodableObject(id: "id", title: "title"))
-        XCTAssertEqual(encodableBody, encodableBody)
-        let otherEncodableBody = Request.HTTPBody.encodable(CodableObject(id: "id", title: "other"))
-        XCTAssertNotEqual(encodableBody, otherEncodableBody)
+        sut.appendParameter(key: "test2", value: "test2")
+        try XCTAssertEqual(XCTUnwrap(sut.parameters as? [String: String]), ["test": "test", "test2": "test2"])
         
-        XCTAssertNotEqual(dataBody, dictionaryBody)
-        XCTAssertNotEqual(dataBody, encodableBody)
-        XCTAssertNotEqual(dictionaryBody, encodableBody)
+        sut.appendParameter(key: "test2", value: "new", override: false)
+        try XCTAssertEqual(XCTUnwrap(sut.parameters as? [String: String]), ["test": "test", "test2": "test2"])
+        
+        sut.appendParameter(key: "test2", value: "new", override: true)
+        try XCTAssertEqual(XCTUnwrap(sut.parameters as? [String: String]), ["test": "test", "test2": "new"])
+    }
+    
+    func testAppendHeader() {
+        var sut = Request(httpMethod: .get, path: "path")
+        XCTAssertNil(sut.headers)
+        
+        sut.appendHeader(key: .contentType, value: ContentType.json.headerValue)
+        XCTAssertEqual(sut.headers, [.contentType: ContentType.json.headerValue])
+        
+        sut.appendHeader(key: .language, value: "en-US")
+        XCTAssertEqual(sut.headers, [.contentType: ContentType.json.headerValue, .language: "en-US"])
+        
+        sut.appendHeader(key: .language, value: "nl-NL", override: false)
+        XCTAssertEqual(sut.headers, [.contentType: ContentType.json.headerValue, .language: "en-US"])
+        
+        sut.appendHeader(key: .language, value: "nl-NL", override: true)
+        XCTAssertEqual(sut.headers, [.contentType: ContentType.json.headerValue, .language: "nl-NL"])
     }
 }
 
