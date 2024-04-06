@@ -20,10 +20,10 @@ final class StatusCodeValidatorTests: XCTestCase {
     func testStatusCodeValidatorWithValidStatusCodesRange() throws {
         sut = StatusCodeValidator(validStatusCodes: 200..<300)
         var statusCode = 200
-        try sut.validate(response: XCTUnwrap(makeResponse(statusCode: statusCode)))
+        try sut.validate(response: makeResponse(statusCode: statusCode))
         
         statusCode = 199
-        try XCTAssertThrowsError(sut.validate(response: XCTUnwrap(makeResponse(statusCode: statusCode)))) { error in
+        try XCTAssertThrowsError(sut.validate(response: makeResponse(statusCode: statusCode))) { error in
             switch error {
             case StatusCodeValidatorError.invalidStatusCode(statusCode):
                 break
@@ -33,7 +33,7 @@ final class StatusCodeValidatorTests: XCTestCase {
         }
         
         statusCode = 300
-        try XCTAssertThrowsError(sut.validate(response: XCTUnwrap(makeResponse(statusCode: statusCode)))) { error in
+        try XCTAssertThrowsError(sut.validate(response: makeResponse(statusCode: statusCode))) { error in
             switch error {
             case StatusCodeValidatorError.invalidStatusCode(statusCode):
                 break
@@ -46,10 +46,10 @@ final class StatusCodeValidatorTests: XCTestCase {
     func testStatusCodeValidatorWithValidStatusCodesSet() throws {
         sut = StatusCodeValidator(validStatusCodes: [200, 201, 203, 204])
         var statusCode = 200
-        try sut.validate(response: XCTUnwrap(makeResponse(statusCode: statusCode)))
+        try sut.validate(response: makeResponse(statusCode: statusCode))
         
         statusCode = 199
-        try XCTAssertThrowsError(sut.validate(response: XCTUnwrap(makeResponse(statusCode: statusCode)))) { error in
+        try XCTAssertThrowsError(sut.validate(response: makeResponse(statusCode: statusCode))) { error in
             switch error {
             case StatusCodeValidatorError.invalidStatusCode(statusCode):
                 break
@@ -59,7 +59,7 @@ final class StatusCodeValidatorTests: XCTestCase {
         }
         
         statusCode = 300
-        try XCTAssertThrowsError(sut.validate(response: XCTUnwrap(makeResponse(statusCode: statusCode)))) { error in
+        try XCTAssertThrowsError(sut.validate(response: makeResponse(statusCode: statusCode))) { error in
             switch error {
             case StatusCodeValidatorError.invalidStatusCode(statusCode):
                 break
@@ -69,15 +69,8 @@ final class StatusCodeValidatorTests: XCTestCase {
         }
     }
     
-    private func makeResponse(statusCode: Int) -> HTTPURLResponse? {
-        URL(string: "https://github.com").flatMap {
-            HTTPURLResponse(
-                url: $0,
-                statusCode: statusCode,
-                httpVersion: nil,
-                headerFields: nil
-            )
-        }
+    private func makeResponse(statusCode: Int) -> Response<Data?> {
+        Response(statusCode: statusCode, headers: [:], content: nil)
     }
 }
 

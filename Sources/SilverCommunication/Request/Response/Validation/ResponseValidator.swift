@@ -8,5 +8,5 @@
 import Foundation
 
 public protocol ResponseValidator {
-    func validate(response: HTTPURLResponse) throws
+    func validate(response: Response<Data?>) throws
 }

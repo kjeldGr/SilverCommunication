@@ -21,11 +21,11 @@ final class RequestManagerTests: XCTestCase {
     private var request: Request!
     private var data: Data!
     private var bundle: Bundle {
-#if SWIFT_PACKAGE
+        #if SWIFT_PACKAGE
         return Bundle.module
-#else
+        #else
         return Bundle(for: Self.self)
-#endif
+        #endif
     }
     
     // MARK: - XCTestCase
@@ -66,6 +66,32 @@ final class RequestManagerTests: XCTestCase {
         XCTAssertEqual(sut.baseURL, baseURL)
         XCTAssertEqual(sut.urlSession, customURLSession)
     }
+    
+    // MARK: Default headers
+    
+    func testDefaultHeaders() {
+        XCTAssertNil(sut.defaultHeaders)
+        
+        sut.appendDefaultHeader(key: .contentType, value: ContentType.json.headerValue)
+        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.json.headerValue])
+        
+        sut.appendDefaultHeader(key: .contentType, value: ContentType.imageJPEG.headerValue, override: false)
+        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.json.headerValue])
+        
+        sut.appendDefaultHeader(key: .contentType, value: ContentType.imageJPEG.headerValue, override: true)
+        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.imageJPEG.headerValue])
+        
+        sut.appendDefaultHeader(key: .language, value: "en-US")
+        XCTAssertEqual(sut.defaultHeaders, [.contentType: ContentType.imageJPEG.headerValue, .language: "en-US"])
+        
+        sut.removeDefaultHeader(key: .contentType)
+        XCTAssertEqual(sut.defaultHeaders, [.language: "en-US"])
+        
+        sut.removeDefaultHeader(key: .language)
+        XCTAssertEqual(sut.defaultHeaders, [:])
+    }
+    
+    // MARK: Perform request
     
     func testPerformRequest() async throws {
         let response = try await sut.perform(request: request)
@@ -190,12 +216,14 @@ final class RequestManagerTests: XCTestCase {
     func testPerformRequestWithMissingData() async throws {
         sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .data(nil))
         do {
-            try await sut.perform(request: request)
+            _ = try await sut.perform(request: request, parser: DictionaryParser<String, String>())
             XCTFail("Expected perform(request:) to fail with RequestManagerError.noData, succeeded instead.")
         } catch RequestManagerError.missingData {} catch {
             XCTFail("Expected perform(request:) to fail with RequestManagerError.noData, failed with \(String(reflecting: error)) instead.")
         }
     }
+    
+    // MARK: Mocking
     
     func testDataMocking() async throws {
         let json = try await sut.perform(
