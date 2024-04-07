@@ -180,7 +180,9 @@ public final class RequestManager: ObservableObject {
 
 private extension Response where ContentType == Data? {
     func unwrap() throws -> Response<Data> {
-        guard let content else { throw RequestManagerError.missingData }
-        return Response<Data>(statusCode: statusCode, headers: headers, content: content)
+        try map { content in
+            guard let content else { throw RequestManagerError.missingData }
+            return content
+        }
     }
 }
