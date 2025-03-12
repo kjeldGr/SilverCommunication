@@ -186,10 +186,16 @@ public final class RequestManager: ObservableObject {
         validators: [ResponseValidator] = [StatusCodeValidator()],
         parser: P
     ) async throws -> Response<P.ResultType> {
-        try await parser.parse(response: perform(request: request, validators: validators).unwrap())
+        try await withCheckedThrowingContinuation { continuation in
+            perform(request: request, validators: validators, parser: parser) { result in
+                continuation.resume(with: result)
+            }
+        }
     }
     
 }
+
+// MARK: - Response+Unwrap
 
 private extension Response where ContentType == Data? {
     func unwrap() throws -> Response<Data> {

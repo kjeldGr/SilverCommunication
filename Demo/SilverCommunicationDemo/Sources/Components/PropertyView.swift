@@ -7,42 +7,67 @@
 
 import SwiftUI
 
-struct PropertyView<Footer: View>: View {
+struct PropertyView<Value: View>: View {
     
     // MARK: - Internal properties
     
+    let axis: Axis
     let title: String
-    let footer: () -> Footer?
+    let value: () -> Value?
     
     // MARK: - Initializers
     
     init(
+        axis: Axis = .vertical,
         title: String,
         value: String? = nil
-    ) where Footer == Text {
-        self.init(title: title) {
-            value.flatMap { Text($0) }
+    ) where Value == Text {
+        self.init(axis: axis, title: title) {
+            value.flatMap {
+                Text($0)
+                    .font(.body)
+            }
         }
     }
     
     init(
+        axis: Axis = .vertical,
         title: String,
-        @ViewBuilder footer: @escaping () -> Footer?
+        @ViewBuilder value: @escaping () -> Value?
     ) {
+        self.axis = axis
         self.title = title
-        self.footer = footer
+        self.value = value
     }
     
     // MARK: - View
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        stack(axis: axis) {
             Text("\(title):")
-                .bold()
-                .frame(maxWidth: .infinity, alignment: .leading)
-            if let footer = footer() {
-                footer
-            }
+                .font(.headline)
+            value()
+        }
+    }
+    
+    @ViewBuilder
+    private func stack<Content: View>(
+        axis: Axis,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        switch axis {
+        case .horizontal:
+            HStack(
+                alignment: .center,
+                spacing: 4,
+                content: content
+            )
+        case .vertical:
+            VStack(
+                alignment: .leading,
+                spacing: 4,
+                content: content
+            )
         }
     }
 }
@@ -55,17 +80,17 @@ struct PropertyView<Footer: View>: View {
     )
 }
 
-#Preview("Title & Value") {
+#Preview("Title & Text Value") {
     PropertyView(
         title: "Title",
         value: "Value"
     )
 }
 
-#Preview("Title & Footer") {
+#Preview("Title & Custom Value View") {
     PropertyView(
         title: "Title",
-        footer: {
+        value: {
             ZStack(alignment: .leading) {
                 Color.blue
                     .frame(height: 24)

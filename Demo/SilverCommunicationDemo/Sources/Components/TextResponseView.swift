@@ -7,21 +7,36 @@
 
 import SwiftUI
 
-enum TextResponseFormat: String {
-    case raw
-    case json
-}
-
 struct TextResponseView: View {
     
     // MARK: - Internal properties
     
     let data: Data
-    private(set) var format: TextResponseFormat
     
     // MARK: - Private properties
     
-    var formattedText: String {
+    @State private var format: TextResponseFormat = .raw
+    
+    // MARK: - View
+    
+    var body: some View {
+        VStack {
+            Picker("Response format", selection: $format) {
+                ForEach(TextResponseFormat.allCases, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+            }
+            .pickerStyle(.segmented)
+            Text(Self.makeFormattedText(data: data, format: format))
+        }
+    }
+    
+    // MARK: - Private methods
+    
+    private static func makeFormattedText(
+        data: Data,
+        format: TextResponseFormat
+    ) -> String {
         do {
             switch format {
             case .raw:
@@ -40,35 +55,19 @@ struct TextResponseView: View {
             return "Unable to format response to text"
         }
     }
-    
-    // MARK: - Initializers
-    
-    init(data: Data, format: TextResponseFormat) {
-        self.data = data
-        self.format = format
-    }
-    
-    init(text: String) {
-        self.data = Data(text.utf8)
-        self.format = .raw
-    }
-    
-    // MARK: - View
-    
-    var body: some View {
-        Text(formattedText)
-    }
+}
+
+// MARK: - TextResponseFormat
+
+private enum TextResponseFormat: String, CaseIterable {
+    case raw = "Raw"
+    case json = "JSON"
 }
 
 // MARK: - Previews
 
-#Preview("Default") {
-    TextResponseView(text: "Response")
-}
-
-#Preview("JSON") {
+#Preview {
     TextResponseView(
-        data: Data("{\"key\": \"value\"}".utf8),
-        format: .json
+        data: Data("{\"key\": \"value\"}".utf8)
     )
 }

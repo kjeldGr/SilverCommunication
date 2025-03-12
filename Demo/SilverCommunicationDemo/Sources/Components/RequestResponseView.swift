@@ -5,18 +5,15 @@
 //  Created by Kjeld Groot on 11/03/2025.
 //
 
-import SwiftUI
 import SilverCommunication
+import SwiftUI
 
-struct RequestResponseView: View {
+struct RequestResponseView<ContentType, Footer: View>: View {
     
     // MARK: - Internal properties
     
-    @Binding var response: Response<Data?>?
-    
-    // MARK: - Private properties
-    
-    @State private var responseFormat: TextResponseFormat = .raw
+    @Binding var response: Response<ContentType>?
+    @ViewBuilder var footer: (ContentType) -> Footer
     
     // MARK: - View
     
@@ -39,26 +36,39 @@ struct RequestResponseView: View {
             PropertyView(
                 title: "Response"
             ) {
-                VStack {
-                    Picker("Response format", selection: $responseFormat) {
-                        Text("Raw").tag(TextResponseFormat.raw)
-                        Text("JSON").tag(TextResponseFormat.json)
-                    }
-                    .pickerStyle(.segmented)
-                    if let content = response?.content {
-                        TextResponseView(
-                            data: content,
-                            format: responseFormat
-                        )
-                    }
+                if let content = response?.content {
+                    footer(content)
+                } else {
+                    Text("N/A")
+                        .font(.body)
                 }
             }
         }
     }
+    
+    // TODO: Move to parsing response view
+    @ViewBuilder
+    private func listItem(for item: Any) -> some View {
+        if let item = item as? [String: AnyHashable] {
+            AnyView(ForEach(Array(item.keys), id: \.self) {
+                PropertyView(
+                    axis: .horizontal,
+                    title: $0,
+                    value: item[$0].flatMap { "\($0)" }
+                )
+            })
+        } else if let item = item as? [AnyHashable] {
+            AnyView(ForEach(item, id: \.self) {
+                listItem(for: $0)
+            })
+        }
+    }
 }
 
+// MARK: - Preview
+
 #Preview {
-    @Previewable @State var response: Response<Data?>? = nil
+    @Previewable @State var response: Response<Any>? = nil
     
-    RequestResponseView(response: $response)
+    RequestResponseView(response: $response) { _ in EmptyView() }
 }
