@@ -12,7 +12,7 @@ struct RequestResponseView<ContentType, Footer: View>: View {
     
     // MARK: - Internal properties
     
-    @Binding var response: Response<ContentType>?
+    let response: Response<ContentType>?
     @ViewBuilder var footer: (ContentType) -> Footer
     
     // MARK: - View
@@ -45,30 +45,14 @@ struct RequestResponseView<ContentType, Footer: View>: View {
             }
         }
     }
-    
-    // TODO: Move to parsing response view
-    @ViewBuilder
-    private func listItem(for item: Any) -> some View {
-        if let item = item as? [String: AnyHashable] {
-            AnyView(ForEach(Array(item.keys), id: \.self) {
-                PropertyView(
-                    axis: .horizontal,
-                    title: $0,
-                    value: item[$0].flatMap { "\($0)" }
-                )
-            })
-        } else if let item = item as? [AnyHashable] {
-            AnyView(ForEach(item, id: \.self) {
-                listItem(for: $0)
-            })
-        }
-    }
 }
 
-// MARK: - Preview
+// MARK: - Previews
 
 #Preview {
-    @Previewable @State var response: Response<Any>? = nil
-    
-    RequestResponseView(response: $response) { _ in EmptyView() }
+    RequestResponseView(
+        response: Optional<Response<Any>>(nil)
+    ) { _ in
+        EmptyView()
+    }
 }

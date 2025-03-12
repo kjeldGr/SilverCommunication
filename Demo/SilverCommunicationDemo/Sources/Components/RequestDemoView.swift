@@ -10,7 +10,7 @@ import SilverCommunication
 
 struct DemoRequestContext: Identifiable, Equatable, Hashable {
     var id: String {
-        "\(httpMethod.rawValue)_\(title)_\(path)"
+        "\(httpMethod.rawValue)_\(path)"
     }
     
     let title: String
@@ -18,36 +18,52 @@ struct DemoRequestContext: Identifiable, Equatable, Hashable {
     let httpMethod: Request.HTTPMethod
     var queryParameters: [String: String] = [String: String]()
     var headers: [String: String] = [String: String]()
+    var httpBody: HTTPBody?
+    
+    var request: Request {
+        Request(
+            httpMethod: httpMethod,
+            path: path,
+            parameters: queryParameters,
+            headers: headers,
+            body: httpBody
+        )
+    }
+    
+    // MARK: - Hashable
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(title)
+        hasher.combine(path)
+        hasher.combine(httpMethod)
+    }
 }
 
-struct RequestDemoView: View {
+protocol RequestDemoViewModel: ObservableObject {
+    associatedtype ContentType
+    
+    var requestManager: RequestManager { get }
+    var requests: [DemoRequestContext] { get }
+    var selectedRequest: DemoRequestContext { get set }
+    var response: Response<ContentType>? { get }
+    
+    func performRequest()
+}
+
+struct RequestDemoView<ViewModel: RequestDemoViewModel, ResponseView: View>: View {
     
     // MARK: - Internal properties
     
-    let requests: [DemoRequestContext]
-    
-    // MARK: - Private properties
-    
-    @EnvironmentObject private var requestManager: RequestManager
-    
-    @State private var selectedRequest: DemoRequestContext
-    @State private var httpBody: HTTPBody?
-    @State private var response: Response<Data?>?
-    
-    // MARK: - Initializers
-    
-    init(requests: [DemoRequestContext]) {
-        self.requests = requests
-        self._selectedRequest = State(initialValue: requests[0])
-    }
+    @StateObject var viewModel: ViewModel
+    @ViewBuilder let response: (Response<ViewModel.ContentType>?) -> ResponseView
     
     // MARK: - View
     
     var body: some View {
         VStack(spacing: 0) {
-            if requests.count > 1 {
-                Picker("Request", selection: $selectedRequest) {
-                    ForEach(requests) {
+            if viewModel.requests.count > 1 {
+                Picker("Request", selection: $viewModel.selectedRequest) {
+                    ForEach(viewModel.requests) {
                         Text($0.title)
                             .tag($0)
                     }
@@ -59,65 +75,40 @@ struct RequestDemoView: View {
                 VStack(alignment: .leading, spacing: 24) {
                     PropertyView(
                         title: "Base URL",
-                        value: requestManager.baseURL.absoluteString
+                        value: viewModel.requestManager.baseURL.absoluteString
                     )
                     PropertyView(
                         title: "Path",
-                        value: selectedRequest.path
+                        value: viewModel.selectedRequest.path
                     )
                     MutableDictionaryPropertyView(
                         title: "Query Parameters",
-                        dictionary: $selectedRequest.queryParameters
+                        dictionary: $viewModel.selectedRequest.queryParameters
                     )
                     MutableDictionaryPropertyView(
                         title: "Request Headers",
-                        dictionary: $selectedRequest.headers
+                        dictionary: $viewModel.selectedRequest.headers
                     )
-                    if selectedRequest.httpMethod.isHTTPBodyFieldVisible {
-                        HTTPBodyView(httpBody: $httpBody)
+                    if viewModel.selectedRequest.httpMethod.isHTTPBodyFieldVisible {
+                        HTTPBodyView(httpBody: $viewModel.selectedRequest.httpBody)
                     }
                     Button("Perform request") {
-                        performRequest()
+                        viewModel.performRequest()
                     }
                     .buttonStyle(.bordered)
-                    RequestResponseView(
-                        response: $response
-                    ) { content in
-                        if let content {
-                            TextResponseView(data: content)
-                        }
-                    }
+                    response(viewModel.response)
                 }
                 .padding(16)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .onChange(of: selectedRequest) { _, newValue in
-            if !newValue.httpMethod.isHTTPBodyFieldVisible {
-                httpBody = nil
-            }
-            response = nil
-        }
-    }
-    
-    // MARK: - Private methods
-    
-    private func performRequest() {
-        Task {
-            do {
-                response = try await requestManager.perform(
-                    request: Request(
-                        httpMethod: selectedRequest.httpMethod,
-                        path: selectedRequest.path,
-                        parameters: selectedRequest.queryParameters,
-                        headers: selectedRequest.headers,
-                        body: httpBody
-                    )
-                )
-            } catch {
-                // TODO: Handle error
-            }
-        }
+        // TODO: Move to ViewModel
+//        .onChange(of: viewModel.selectedRequest) { _, newValue in
+//            if !newValue.httpMethod.isHTTPBodyFieldVisible {
+//                viewModel.selectedRequest.httpBody = nil
+//            }
+////            response = nil
+//        }
     }
 }
 

@@ -54,7 +54,7 @@ struct MutableDictionaryPropertyView: View {
     }
 }
 
-// MARK: - Preview
+// MARK: - Previews
 
 #Preview {
     @Previewable @State var dictionary: [String: String] = [String: String]()

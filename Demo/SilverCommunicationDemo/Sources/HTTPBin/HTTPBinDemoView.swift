@@ -16,22 +16,33 @@ struct HTTPBinDemoView: View {
         baseURL: URL(string: "https://httpbin.org")!
     )
     
+    static private let requests: [DemoRequestContext] = [
+        Request.HTTPMethod.get, .post, .put, .delete, .patch
+    ].map {
+        DemoRequestContext(
+            title: $0.rawValue,
+            path: "/\($0.rawValue.lowercased())",
+            httpMethod: $0
+        )
+    }
+    
     // MARK: - View
     
     var body: some View {
         RequestDemoView(
-            requests: [
-                Request.HTTPMethod.get, .post, .put, .delete, .patch
-            ].map {
-                DemoRequestContext(
-                    title: $0.rawValue,
-                    path: "/\($0.rawValue.lowercased())",
-                    httpMethod: $0
-                )
+            viewModel: HTTPBinDemoViewModel(
+                requestManager: requestManager,
+                requests: Self.requests)
+        ) { response in
+            RequestResponseView(
+                response: response
+            ) { data in
+                TextResponseView(data: data)
             }
-        )
+        }
         .navigationTitle("HTTPBin API")
-        .environmentObject(requestManager)
+        // TODO: Move to ContentView
+//        .environmentObject(requestManager)
     }
 }
 
