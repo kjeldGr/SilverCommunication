@@ -5,6 +5,7 @@
 //  Created by Kjeld Groot on 11/03/2025.
 //
 
+import SilverCommunication
 import SwiftUI
 
 struct ContentView: View {
@@ -17,12 +18,11 @@ struct ContentView: View {
                 Section("SilverCommunication Demo's") {
                     NavigationLink("HTTPBin") {
                         HTTPBinDemoView()
+                            .environmentObject(RequestManager(baseURL: Constants.httpBinBaseURL))
                     }
                     NavigationLink("GitHub") {
                         GitHubDemoView()
-                    }
-                    NavigationLink("Custom API") {
-                        EmptyView()
+                            .environmentObject(RequestManager(baseURL: Constants.gitHubBaseURL))
                     }
                 }
             }

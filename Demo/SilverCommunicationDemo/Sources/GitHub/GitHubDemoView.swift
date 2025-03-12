@@ -12,17 +12,7 @@ struct GitHubDemoView: View {
     
     // MARK: - Private properties
     
-    @State private var requestManager: RequestManager = RequestManager(
-        baseURL: URL(string: "https://api.github.com")!
-    )
-    private static let requests: [DemoRequestContext] = [
-        DemoRequestContext(
-            title: "Apple Repositories",
-            path: "/orgs/apple/repos",
-            httpMethod: .get,
-            queryParameters: ["per_page": "5"]
-        )
-    ]
+    @EnvironmentObject private var requestManager: RequestManager
     
     // MARK: - View
     
@@ -30,7 +20,14 @@ struct GitHubDemoView: View {
         RequestDemoView(
             viewModel: GitHubDemoViewModel(
                 requestManager: requestManager,
-                requests: Self.requests
+                requests: [
+                    DemoRequestContext(
+                        title: "Apple Repositories",
+                        path: "/orgs/apple/repos",
+                        httpMethod: .get,
+                        queryParameters: ["per_page": "5"]
+                    )
+                ]
             )
         ) { response in
             RequestResponseView(
@@ -39,8 +36,7 @@ struct GitHubDemoView: View {
                 GitHubRepositoryList(repositories: repositories)
             }
         }
-        .navigationTitle("GitHub API")
-        .environmentObject(requestManager)
+        .navigationTitle("GitHub")
     }
 }
 
