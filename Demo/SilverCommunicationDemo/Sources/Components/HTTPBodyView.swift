@@ -76,7 +76,10 @@ struct HTTPBodyView: View {
     }
 }
 
-// TODO: Fix previews
-//#Preview {
-//    HTTPBodyView()
-//}
+// MARK: - Previews
+
+#Preview {
+    @Previewable @State var httpBody: HTTPBody?
+    
+    HTTPBodyView(httpBody: $httpBody)
+}

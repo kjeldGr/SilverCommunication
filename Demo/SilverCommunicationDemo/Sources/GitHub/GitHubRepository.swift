@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct GitHubRepository: Identifiable, Decodable {
+struct GitHubRepository: Identifiable, Codable {
     
     // MARK: - Owner
     
-    struct Owner: Identifiable, Decodable {
+    struct Owner: Identifiable, Codable {
         let id: Int
         let name: String
         let avatar: URL?
