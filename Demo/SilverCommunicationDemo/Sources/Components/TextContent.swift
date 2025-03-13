@@ -51,7 +51,9 @@ struct TextContent: View {
         if isMutable {
             TextField(titleKey, text: $text)
                 .autocorrectionDisabled()
+                #if os(iOS)
                 .textInputAutocapitalization(.never)
+                #endif
         } else {
             Text(text)
         }

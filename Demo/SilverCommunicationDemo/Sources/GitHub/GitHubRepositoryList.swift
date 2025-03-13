@@ -43,7 +43,11 @@ struct GitHubRepositoryList: View {
                 }
                 LabeledContent("URL") {
                     Button(repository.url.absoluteString) {
+                        #if os(macOS)
+                        NSWorkspace.shared.open(repository.url)
+                        #elseif os(iOS)
                         UIApplication.shared.open(repository.url)
+                        #endif
                     }
                 }
             }

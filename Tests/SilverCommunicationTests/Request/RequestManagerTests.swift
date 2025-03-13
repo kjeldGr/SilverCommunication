@@ -6,7 +6,6 @@
 //
 
 import XCTest
-import SilverCommunication
 
 @testable import SilverCommunication
 
