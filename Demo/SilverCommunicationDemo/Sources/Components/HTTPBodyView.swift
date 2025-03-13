@@ -13,7 +13,8 @@ struct HTTPBodyView: View {
     // MARK: - ContentType
     
     enum ContentType: String, CaseIterable {
-        case json = "JSON"
+        case jsonDictionary = "JSON Dictionary"
+        case jsonList = "JSON List"
         case text = "Text"
     }
     
@@ -24,30 +25,39 @@ struct HTTPBodyView: View {
     // MARK: - Private properties
     
     @State private var contentType: ContentType = .text
+    @State private var dictionaryItems: [DictionaryItem] = []
+    @State private var list: [String] = []
     @State private var text: String = ""
     
     // MARK: - View
     
     var body: some View {
-        PropertyView(
-            title: "HTTP Body"
-        ) {
-            PropertyView(axis: .horizontal, title: "Content Type") {
-                Picker("Content Type", selection: $contentType) {
-                    ForEach(ContentType.allCases, id: \.self) {
-                        Text($0.rawValue).tag($0)
-                    }
-                }
+        Picker("Content Type", selection: $contentType) {
+            ForEach(ContentType.allCases, id: \.self) {
+                Text($0.rawValue).tag($0)
             }
-            TextField("HTTP Body", text: $text, axis: .vertical)
-                .autocorrectionDisabled()
-                .textInputAutocapitalization(.never)
-        }
-        .onChange(of: text) { _, _ in
-            updateHTTPBody()
         }
         .onChange(of: contentType) { _, _ in
             updateHTTPBody()
+        }
+        switch contentType {
+        case .jsonDictionary:
+            DictionaryItemArrayContent(items: $dictionaryItems)
+                .onChange(of: dictionaryItems) { _, _ in
+                    updateHTTPBody()
+                }
+        case .jsonList:
+            StringArrayContent(items: $list)
+                .onChange(of: list) { _, _ in
+                    updateHTTPBody()
+                }
+        case .text:
+            LabeledContent("Body") {
+                TextField("Body", text: $text)
+            }
+            .onChange(of: text) { _, _ in
+                updateHTTPBody()
+            }
         }
     }
     
@@ -55,20 +65,14 @@ struct HTTPBodyView: View {
     
     private func updateHTTPBody() {
         switch contentType {
-        case _ where text.isEmpty:
+        case .jsonDictionary where dictionaryItems.isEmpty,
+                .jsonList where list.isEmpty,
+                .text where text.isEmpty:
             httpBody = nil
-        case .json:
-            do {
-                let jsonObject = try JSONSerialization.jsonObject(
-                    with: Data(text.utf8)
-                )
-                httpBody = try HTTPBody(jsonObject: jsonObject)
-            } catch {
-                httpBody = HTTPBody(
-                    data: Data("\(text) (JSON is invalid)".utf8),
-                    contentType: .text
-                )
-            }
+        case .jsonDictionary:
+            httpBody = try? HTTPBody(jsonObject: dictionaryItems.dictionary)
+        case .jsonList:
+            httpBody = try? HTTPBody(jsonObject: list)
         case .text:
             httpBody = HTTPBody(
                 data: Data(text.utf8),
@@ -83,5 +87,7 @@ struct HTTPBodyView: View {
 #Preview {
     @Previewable @State var httpBody: HTTPBody?
     
-    HTTPBodyView(httpBody: $httpBody)
+    List {
+        HTTPBodyView(httpBody: $httpBody)
+    }
 }

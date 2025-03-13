@@ -53,12 +53,12 @@ extension GitHubRepository {
         id: 0,
         owner: GitHubRepository.Owner(
             id: 0,
-            name: "Preview",
+            name: "Owner",
             avatar: nil
         ),
         url: URL(string: "https://github.com")!,
-        name: "Preview",
-        description: "Preview",
+        name: "Name",
+        description: "Description",
         language: "Swift",
         size: 100
     )

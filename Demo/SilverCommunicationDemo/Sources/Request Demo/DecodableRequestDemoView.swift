@@ -23,16 +23,17 @@ struct DecodableRequestDemoView<ContentType: Decodable, ResponseView: View>: Vie
     // MARK: - View
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            RequestView(
-                baseURL: requestManager.baseURL,
-                context: $context,
-                performRequestAction: performRequest
-            )
+        RequestView(
+            baseURL: requestManager.baseURL,
+            context: $context,
+            performRequestAction: performRequest
+        )
+        if let response {
             RequestResponseView(
-                response: response
-            ) { content in
-                responseView(content)
+                statusCode: response.statusCode,
+                headers: response.headers
+            ) {
+                responseView(response.content)
             }
         }
     }
@@ -56,13 +57,15 @@ struct DecodableRequestDemoView<ContentType: Decodable, ResponseView: View>: Vie
 // MARK: - Previews
 
 #Preview {
-    DecodableRequestDemoView(
-        context: RequestContext(
-            path: "/preview",
-            httpMethod: .get
-        )
-    ) { (text: String) in
-        Text(text)
+    List {
+        DecodableRequestDemoView(
+            context: RequestContext(
+                path: "/preview",
+                httpMethod: .get
+            )
+        ) { (text: String) in
+            Text(text)
+        }
     }
     .environmentObject(RequestManager(
         baseURL: .gitHub,

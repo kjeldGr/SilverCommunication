@@ -50,7 +50,7 @@ enum DemoRequest: String, Identifiable {
         case .patch:
             return RequestContext(path: "/patch", httpMethod: .patch)
         case .repositoryList:
-            return RequestContext(path: "/orgs/apple/repos", httpMethod: .get, queryParameters: ["per_page": "10"])
+            return RequestContext(path: "/orgs/apple/repos", httpMethod: .get, queryParameters: [DictionaryItem(key: "per_page", value: "10")])
         case .repositoryDetail:
             return RequestContext(path: "repos/apple/swift", httpMethod: .get)
         }

@@ -41,13 +41,10 @@ struct RequestDemoListView<Content: View>: View {
                 .pickerStyle(.segmented)
                 .padding(16)
             }
-            ScrollView(.vertical) {
-                ZStack {
-                    requestView(selectedRequest)
-                        .id(selectedRequest)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(16)
+            List {
+                requestView(selectedRequest)
+                    .id(selectedRequest)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }

@@ -20,15 +20,17 @@ struct TextResponseView: View {
     // MARK: - View
     
     var body: some View {
-        VStack {
-            Picker("Response format", selection: $format) {
-                ForEach(TextResponseFormat.allCases, id: \.self) {
-                    Text($0.rawValue).tag($0)
+        Section("Content") {
+            VStack {
+                Picker("Response format", selection: $format) {
+                    ForEach(TextResponseFormat.allCases, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
                 }
+                .pickerStyle(.segmented)
+                Text(Self.makeFormattedText(data: data, format: format))
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .pickerStyle(.segmented)
-            Text(Self.makeFormattedText(data: data, format: format))
-                .font(.body)
         }
     }
     
@@ -70,7 +72,9 @@ private enum TextResponseFormat: String, CaseIterable {
 // MARK: - Previews
 
 #Preview {
-    TextResponseView(
-        data: Data("{\"key\": \"value\"}".utf8)
-    )
+    List {
+        TextResponseView(
+            data: Data("{\"key\": \"value\"}".utf8)
+        )
+    }
 }

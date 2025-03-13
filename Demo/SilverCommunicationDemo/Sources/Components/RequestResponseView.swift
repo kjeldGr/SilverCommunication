@@ -8,51 +8,43 @@
 import SilverCommunication
 import SwiftUI
 
-struct RequestResponseView<ContentType, Footer: View>: View {
+struct RequestResponseView<Footer: View>: View {
     
     // MARK: - Internal properties
     
-    let response: Response<ContentType>?
-    @ViewBuilder var footer: (ContentType) -> Footer
+    let statusCode: Int
+    let headers: [String: String]
+    @ViewBuilder var footer: () -> Footer
     
     // MARK: - View
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            PropertyView(
-                title: "Response status",
-                value: response.flatMap {
-                    "\($0.statusCode)"
-                } ?? "N/A"
+        Section("Response") {
+            LabeledContent(
+                "Status",
+                value: "\(statusCode)"
             )
-            PropertyView(
-                title: "Response headers",
-                value: response.flatMap {
-                    $0.headers.map {
-                        "\($0.key): \($0.value)"
-                    }.joined(separator: "\n")
-                } ?? "N/A"
-            )
-            PropertyView(
-                title: "Response"
-            ) {
-                if let content = response?.content {
-                    footer(content)
-                } else {
-                    Text("N/A")
-                        .font(.body)
-                }
+        }
+        if !headers.isEmpty {
+            Section("Headers") {
+                DictionaryItemArrayContent(
+                    items: headers.items
+                )
             }
         }
+        footer()
     }
 }
 
 // MARK: - Previews
 
 #Preview {
-    RequestResponseView(
-        response: Optional<Response<Any>>(nil)
-    ) { _ in
-        EmptyView()
+    List {
+        RequestResponseView(
+            statusCode: 200,
+            headers: ["Key": "Value"]
+        ) {
+            EmptyView()
+        }
     }
 }

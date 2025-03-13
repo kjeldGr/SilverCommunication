@@ -22,16 +22,17 @@ struct RawRequestDemoView: View {
     // MARK: - View
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            RequestView(
-                baseURL: requestManager.baseURL,
-                context: $context,
-                performRequestAction: performRequest
-            )
+        RequestView(
+            baseURL: requestManager.baseURL,
+            context: $context,
+            performRequestAction: performRequest
+        )
+        if let response {
             RequestResponseView(
-                response: response
-            ) { data in
-                TextResponseView(data: data)
+                statusCode: response.statusCode,
+                headers: response.headers
+            ) {
+                TextResponseView(data: response.content)
             }
         }
     }
@@ -46,6 +47,7 @@ struct RawRequestDemoView: View {
                 )
             } catch {
                 // TODO: Handle error
+                debugPrint(error)
             }
         }
     }
@@ -54,12 +56,14 @@ struct RawRequestDemoView: View {
 // MARK: - Previews
 
 #Preview {
-    RawRequestDemoView(
-        context: RequestContext(
-            path: "/preview",
-            httpMethod: .get
+    List {
+        RawRequestDemoView(
+            context: RequestContext(
+                path: "/preview",
+                httpMethod: .get
+            )
         )
-    )
+    }
     .environmentObject(RequestManager(
         baseURL: .httpBin,
         mockingMethod: .data(Data("preview".utf8))

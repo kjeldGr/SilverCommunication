@@ -5,6 +5,7 @@
 //  Created by Kjeld Groot on 12/03/2025.
 //
 
+import SilverCommunication
 import SwiftUI
 
 struct RequestView: View {
@@ -18,16 +19,40 @@ struct RequestView: View {
     // MARK: - View
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            PropertyView(
-                title: "Base URL",
-                value: baseURL.absoluteString
+        Section("Request") {
+            LabeledContent("Base URL", value: baseURL.absoluteString)
+            LabeledContent("Path", value: context.path)
+        }
+        Section("Query parameters") {
+            DictionaryItemArrayContent(
+                items: $context.queryParameters
             )
-            RequestPropertiesView(
-                context: $context
+        }
+        Section("Headers") {
+            DictionaryItemArrayContent(
+                items: $context.headers
             )
-            Button("Perform request", action: performRequestAction)
-                .buttonStyle(.bordered)
+        }
+        if context.httpMethod.isHTTPBodyFieldVisible {
+            Section("HTTP Body") {
+                HTTPBodyView(
+                    httpBody: $context.httpBody
+                )
+            }
+        }
+        Button("Perform request", action: performRequestAction)
+    }
+}
+
+// MARK: - HTTPMethod+HTTPBody
+
+private extension Request.HTTPMethod {
+    var isHTTPBodyFieldVisible: Bool {
+        switch self {
+        case .get:
+            return false
+        default:
+            return true
         }
     }
 }
@@ -40,10 +65,12 @@ struct RequestView: View {
         httpMethod: .get
     )
     
-    RequestView(
-        baseURL: .gitHub,
-        context: $context
-    ) {}
+    List {
+        RequestView(
+            baseURL: .gitHub,
+            context: $context
+        ) {}
+    }
 }
 
 #Preview("POST") {
@@ -52,8 +79,10 @@ struct RequestView: View {
         httpMethod: .post
     )
     
-    RequestView(
-        baseURL: .gitHub,
-        context: $context
-    ) {}
+    List {
+        RequestView(
+            baseURL: .gitHub,
+            context: $context
+        ) {}
+    }
 }
