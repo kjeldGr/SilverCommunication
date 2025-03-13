@@ -6,7 +6,6 @@
 //
 
 import XCTest
-import SilverCommunication
 
 @testable import SilverCommunication
 
@@ -55,7 +54,16 @@ final class RequestManagerTests: XCTestCase {
     // MARK: - Tests
     
     func testInitialProperties() throws {
-        let baseURL = try XCTUnwrap(URL(string: "https://github.com"))
+        let baseURLString = "https://github.com"
+        let baseURL = try XCTUnwrap(URL(string: baseURLString))
+        
+        sut = RequestManager(baseURL: baseURL)
+        XCTAssertEqual(sut.baseURL, baseURL)
+        XCTAssertEqual(sut.urlSession, .shared)
+        
+        sut = try RequestManager(baseURL: baseURLString)
+        XCTAssertEqual(sut.baseURL, baseURL)
+        XCTAssertEqual(sut.urlSession, .shared)
         
         sut = RequestManager(baseURL: baseURL)
         XCTAssertEqual(sut.baseURL, baseURL)
@@ -65,6 +73,17 @@ final class RequestManagerTests: XCTestCase {
         sut = RequestManager(baseURL: baseURL, urlSession: customURLSession, defaultHeaders: nil)
         XCTAssertEqual(sut.baseURL, baseURL)
         XCTAssertEqual(sut.urlSession, customURLSession)
+    }
+    
+    func testInitWithBaseURLStringWithInvalidURL() throws {
+        try XCTAssertThrowsError(RequestManager(baseURL: "")) { error in
+            switch error {
+            case RequestManagerError.invalidBaseURL:
+                break
+            default:
+                XCTFail("Expected initializer to fail with RequestManagerError.invalidBaseURL, failed with \(String(reflecting: error)) instead.")
+            }
+        }
     }
     
     // MARK: Default headers
