@@ -1,38 +1,38 @@
 //
-//  GitHubRepositoryListRequestView.swift
+//  DecodableRequestDemoView.swift
 //  SilverCommunicationDemo
 //
-//  Created by KPGroot on 13/03/2025.
+//  Created by Kjeld Groot on 13/03/2025.
 //
 
 import SilverCommunication
 import SwiftUI
 
-struct GitHubRepositoryListRequestView: View {
+struct DecodableRequestDemoView<ContentType: Decodable, ResponseView: View>: View {
     
     // MARK: - Internal properties
     
-    @State var requestContext: RequestContext
+    @State var context: RequestContext
+    @ViewBuilder var responseView: (ContentType) -> ResponseView
     
     // MARK: - Private properties
     
     @EnvironmentObject private var requestManager: RequestManager
-    @State private var response: Response<[GitHubRepository]>?
+    @State private var response: Response<ContentType>?
     
     // MARK: - View
     
     var body: some View {
-        RequestView(
-            baseURL: requestManager.baseURL,
-            requestContext: $requestContext,
-            performRequestAction: performRequest
-        ) {
+        VStack(alignment: .leading, spacing: 24) {
+            RequestView(
+                baseURL: requestManager.baseURL,
+                context: $context,
+                performRequestAction: performRequest
+            )
             RequestResponseView(
                 response: response
-            ) { repositories in
-                GitHubRepositoryList(
-                    repositories: repositories
-                )
+            ) { content in
+                responseView(content)
             }
         }
     }
@@ -43,7 +43,7 @@ struct GitHubRepositoryListRequestView: View {
         Task { @MainActor in
             do {
                 response = try await requestManager.perform(
-                    request: requestContext.request,
+                    request: context.request,
                     parser: DecodableParser()
                 )
             } catch {
@@ -56,14 +56,16 @@ struct GitHubRepositoryListRequestView: View {
 // MARK: - Previews
 
 #Preview {
-    GitHubRepositoryListRequestView(
-        requestContext: RequestContext(
+    DecodableRequestDemoView(
+        context: RequestContext(
             path: "/preview",
             httpMethod: .get
         )
-    )
+    ) { (text: String) in
+        Text(text)
+    }
     .environmentObject(RequestManager(
-        baseURL: Constants.gitHubBaseURL,
+        baseURL: .gitHub,
         mockingMethod: .encodable([GitHubRepository.preview])
     ))
 }

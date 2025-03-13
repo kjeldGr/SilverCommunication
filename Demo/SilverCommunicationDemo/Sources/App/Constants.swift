@@ -6,8 +6,14 @@
 //
 
 import Foundation
+import SilverCommunication
 
-enum Constants {
-    static let gitHubBaseURL: URL = URL(string: "https://api.github.com")!
-    static let httpBinBaseURL: URL = URL(string: "https://httpbin.org")!
+extension URL {
+    static let gitHub: URL = URL(string: "https://api.github.com")!
+    static let httpBin: URL = URL(string: "https://httpbin.org")!
+}
+
+extension RequestManager {
+    static let gitHub: RequestManager = RequestManager(baseURL: .gitHub)
+    static let httpBin: RequestManager = RequestManager(baseURL: .httpBin)
 }

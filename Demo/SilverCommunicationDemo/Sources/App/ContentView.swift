@@ -15,23 +15,56 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("SilverCommunication Demo's") {
+                Section("Demo requests") {
                     NavigationLink("HTTPBin") {
-                        HTTPBinDemoView()
-                            .environmentObject(RequestManager(baseURL: Constants.httpBinBaseURL))
+                        RequestDemoListView(
+                            requests: [.get, .post, .put, .delete, .patch],
+                            requestView: requestView
+                        )
+                        .environmentObject(RequestManager.httpBin)
+                        .navigationTitle("HTTPBin")
                     }
                     NavigationLink("GitHub") {
-                        GitHubDemoView()
-                            .environmentObject(RequestManager(baseURL: Constants.gitHubBaseURL))
+                        RequestDemoListView(
+                            requests: [.repositoryList, .repositoryDetail],
+                            requestView: requestView
+                        )
+                        .environmentObject(RequestManager.gitHub)
+                        .navigationTitle("GitHub")
                     }
                 }
             }
             .navigationTitle("Demo")
         }
     }
+    
+    // MARK: - Private methods
+    
+    @ViewBuilder
+    private func requestView(for request: DemoRequest) -> some View {
+        switch request {
+        case .get, .post, .put, .delete, .patch:
+            RawRequestDemoView(
+                context: request.context
+            )
+        case .repositoryList:
+            DecodableRequestDemoView(
+                context: request.context
+            ) { repositories in
+                GitHubRepositoryList(repositories: repositories)
+            }
+        case .repositoryDetail:
+            DecodableRequestDemoView(
+                context: request.context
+            ) { repository in
+                GitHubRepositoryList(repositories: [repository])
+            }
+        }
+    }
 }
 
-// TODO: Fix Preview with Environment object
-//#Preview {
-//    ContentView()
-//}
+// MARK: - Previews
+
+#Preview {
+    ContentView()
+}

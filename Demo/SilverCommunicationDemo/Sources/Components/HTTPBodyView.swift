@@ -40,6 +40,8 @@ struct HTTPBodyView: View {
                 }
             }
             TextField("HTTP Body", text: $text, axis: .vertical)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
         }
         .onChange(of: text) { _, _ in
             updateHTTPBody()

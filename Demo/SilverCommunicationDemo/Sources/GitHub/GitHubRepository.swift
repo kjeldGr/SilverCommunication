@@ -2,7 +2,7 @@
 //  GitHubRepository.swift
 //  SilverCommunicationDemo
 //
-//  Created by KPGroot on 12/03/2025.
+//  Created by Kjeld Groot on 12/03/2025.
 //
 
 import Foundation

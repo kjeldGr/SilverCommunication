@@ -2,19 +2,18 @@
 //  RequestView.swift
 //  SilverCommunicationDemo
 //
-//  Created by KPGroot on 12/03/2025.
+//  Created by Kjeld Groot on 12/03/2025.
 //
 
 import SwiftUI
 
-struct RequestView<Footer: View>: View {
+struct RequestView: View {
     
     // MARK: - Internal properties
     
     let baseURL: URL
-    @Binding var requestContext: RequestContext
+    @Binding var context: RequestContext
     let performRequestAction: () -> Void
-    @ViewBuilder let footer: () -> Footer
     
     // MARK: - View
     
@@ -25,11 +24,10 @@ struct RequestView<Footer: View>: View {
                 value: baseURL.absoluteString
             )
             RequestPropertiesView(
-                request: $requestContext
+                context: $context
             )
             Button("Perform request", action: performRequestAction)
                 .buttonStyle(.bordered)
-            footer()
         }
     }
 }
@@ -37,29 +35,25 @@ struct RequestView<Footer: View>: View {
 // MARK: - Previews
 
 #Preview("GET") {
-    @Previewable @State var requestContext: RequestContext = RequestContext(
+    @Previewable @State var context: RequestContext = RequestContext(
         path: "preview",
         httpMethod: .get
     )
     
     RequestView(
-        baseURL: Constants.gitHubBaseURL,
-        requestContext: $requestContext
-    ) {} footer: {
-        EmptyView()
-    }
+        baseURL: .gitHub,
+        context: $context
+    ) {}
 }
 
 #Preview("POST") {
-    @Previewable @State var requestContext: RequestContext = RequestContext(
+    @Previewable @State var context: RequestContext = RequestContext(
         path: "preview",
         httpMethod: .post
     )
     
     RequestView(
-        baseURL: Constants.gitHubBaseURL,
-        requestContext: $requestContext
-    ) {} footer: {
-        EmptyView()
-    }
+        baseURL: .gitHub,
+        context: $context
+    ) {}
 }

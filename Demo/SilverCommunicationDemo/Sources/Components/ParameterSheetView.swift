@@ -35,11 +35,15 @@ struct ParameterSheetView: View {
                     title: "Key"
                 ) {
                     TextField("Key", text: $key)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
                 }
                 PropertyView(
                     title: "Value"
                 ) {
                     TextField("Value", text: $value)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
                 }
             }
             Spacer()
@@ -66,6 +70,7 @@ struct ParameterSheetView: View {
 #Preview {
     @Previewable @State var parameters: [String: String] = [String: String]()
     @Previewable @State var isPresented: Bool = true
+    
     ParameterSheetView(
         title: "Add parameter",
         isPresented: $isPresented,

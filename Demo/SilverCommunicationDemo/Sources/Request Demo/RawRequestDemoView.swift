@@ -1,18 +1,18 @@
 //
-//  HTTPBinRequestView.swift
+//  RawRequestDemoView.swift
 //  SilverCommunicationDemo
 //
-//  Created by KPGroot on 13/03/2025.
+//  Created by Kjeld Groot on 13/03/2025.
 //
 
 import SilverCommunication
 import SwiftUI
 
-struct HTTPBinRequestView: View {
+struct RawRequestDemoView: View {
     
     // MARK: - Internal properties
     
-    @State var requestContext: RequestContext
+    @State var context: RequestContext
     
     // MARK: - Private properties
     
@@ -22,11 +22,12 @@ struct HTTPBinRequestView: View {
     // MARK: - View
     
     var body: some View {
-        RequestView(
-            baseURL: requestManager.baseURL,
-            requestContext: $requestContext,
-            performRequestAction: performRequest
-        ) {
+        VStack(alignment: .leading, spacing: 24) {
+            RequestView(
+                baseURL: requestManager.baseURL,
+                context: $context,
+                performRequestAction: performRequest
+            )
             RequestResponseView(
                 response: response
             ) { data in
@@ -41,7 +42,7 @@ struct HTTPBinRequestView: View {
         Task { @MainActor in
             do {
                 response = try await requestManager.perform(
-                    request: requestContext.request
+                    request: context.request
                 )
             } catch {
                 // TODO: Handle error
@@ -50,15 +51,17 @@ struct HTTPBinRequestView: View {
     }
 }
 
+// MARK: - Previews
+
 #Preview {
-    HTTPBinRequestView(
-        requestContext: RequestContext(
+    RawRequestDemoView(
+        context: RequestContext(
             path: "/preview",
             httpMethod: .get
         )
     )
     .environmentObject(RequestManager(
-        baseURL: Constants.httpBinBaseURL,
+        baseURL: .httpBin,
         mockingMethod: .data(Data("preview".utf8))
     ))
 }

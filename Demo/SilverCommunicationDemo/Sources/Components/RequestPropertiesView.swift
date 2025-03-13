@@ -2,7 +2,7 @@
 //  RequestPropertiesView.swift
 //  SilverCommunicationDemo
 //
-//  Created by KPGroot on 12/03/2025.
+//  Created by Kjeld Groot on 12/03/2025.
 //
 
 import SilverCommunication
@@ -12,7 +12,7 @@ struct RequestPropertiesView: View {
     
     // MARK: - Internal properties
     
-    @Binding var request: RequestContext
+    @Binding var context: RequestContext
     
     // MARK: - View
     
@@ -20,18 +20,18 @@ struct RequestPropertiesView: View {
         VStack(alignment: .leading, spacing: 24) {
             PropertyView(
                 title: "Path",
-                value: request.path
+                value: context.path
             )
             MutableDictionaryPropertyView(
                 title: "Query Parameters",
-                dictionary: $request.queryParameters
+                dictionary: $context.queryParameters
             )
             MutableDictionaryPropertyView(
                 title: "Request Headers",
-                dictionary: $request.headers
+                dictionary: $context.headers
             )
-            if request.httpMethod.isHTTPBodyFieldVisible {
-                HTTPBodyView(httpBody: $request.httpBody)
+            if context.httpMethod.isHTTPBodyFieldVisible {
+                HTTPBodyView(httpBody: $context.httpBody)
             }
         }
     }
@@ -53,21 +53,21 @@ private extension Request.HTTPMethod {
 // MARK: - Previews
 
 #Preview("GET") {
-    @Previewable @State var request: RequestContext = RequestContext(
+    @Previewable @State var context: RequestContext = RequestContext(
         path: "/get",
         httpMethod: .get
     )
     RequestPropertiesView(
-        request: $request
+        context: $context
     )
 }
 
 #Preview("POST") {
-    @Previewable @State var request: RequestContext = RequestContext(
+    @Previewable @State var context: RequestContext = RequestContext(
         path: "/post",
         httpMethod: .post
     )
     RequestPropertiesView(
-        request: $request
+        context: $context
     )
 }
