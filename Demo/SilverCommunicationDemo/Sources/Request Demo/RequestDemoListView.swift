@@ -20,10 +20,10 @@ struct RequestDemoListView<Content: View>: View {
     
     init(
         requests: [DemoRequest],
-        @ViewBuilder requestView: @escaping (DemoRequest) -> Content
+        @ViewBuilder demoContent: @escaping (DemoRequest) -> Content
     ) {
         self.requests = requests
-        self.demoContent = requestView
+        self.demoContent = demoContent
         self._selectedRequest = State(initialValue: requests[0])
     }
     

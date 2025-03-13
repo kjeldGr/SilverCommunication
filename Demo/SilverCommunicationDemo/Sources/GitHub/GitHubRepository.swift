@@ -8,6 +8,13 @@
 import Foundation
 
 struct GitHubRepository: Identifiable, Codable {
+    let id: Int
+    let owner: Owner
+    let url: URL
+    let name: String
+    let description: String?
+    let language: String?
+    let size: Int?
     
     // MARK: - Owner
     
@@ -24,14 +31,6 @@ struct GitHubRepository: Identifiable, Codable {
             case avatar = "avatar_url"
         }
     }
-    
-    let id: Int
-    let owner: Owner
-    let url: URL
-    let name: String
-    let description: String?
-    let language: String?
-    let size: Int?
     
     // MARK: - CodingKeys
     

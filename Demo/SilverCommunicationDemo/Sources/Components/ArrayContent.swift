@@ -7,6 +7,39 @@
 
 import SwiftUI
 
+struct ArrayContent<Element, Content: View>: View {
+    
+    // MARK: - Internal properties
+    
+    @Binding var items: [Element]
+    let isMutable: Bool
+    let add: () -> Void
+    @ViewBuilder let content: (_ index: Int) -> Content
+    
+    // MARK: - View
+    
+    var body: some View {
+        ForEach(Array(items.enumerated()), id: \.offset) { index, _ in
+            content(index)
+            
+        }
+        .onDelete(perform: delete)
+        .deleteDisabled(!isMutable)
+        
+        if isMutable {
+            Button("Add", action: add)
+        }
+    }
+    
+    // MARK: - Private methods
+    
+    private func delete(atOffsets indexSet: IndexSet) {
+        items.remove(atOffsets: indexSet)
+    }
+}
+
+// MARK: - StringArrayContent
+
 struct StringArrayContent: View {
     
     // MARK: - Private properties
@@ -51,6 +84,8 @@ struct StringArrayContent: View {
     }
 }
 
+// MARK: - DictionaryItemArrayContent
+
 struct DictionaryItemArrayContent: View {
     
     // MARK: - Private properties
@@ -81,7 +116,7 @@ struct DictionaryItemArrayContent: View {
             items: $items,
             isMutable: isMutable
         ) {
-            items.append(DictionaryItem())
+            items.append(DictionaryItem(key: "", value: ""))
         } content: { index in
             LabeledContent {
                 TextContent(
@@ -103,37 +138,6 @@ struct DictionaryItemArrayContent: View {
                 )
             }
         }
-    }
-}
-
-struct ArrayContent<Element, Content: View>: View {
-    
-    // MARK: - Private properties
-    
-    @Binding var items: [Element]
-    let isMutable: Bool
-    let add: () -> Void
-    @ViewBuilder let content: (_ index: Int) -> Content
-    
-    // MARK: - View
-    
-    var body: some View {
-        ForEach(Array(items.enumerated()), id: \.offset) { index, _ in
-            content(index)
-            
-        }
-        .onDelete(perform: delete)
-        .deleteDisabled(!isMutable)
-        
-        if isMutable {
-            Button("Add", action: add)
-        }
-    }
-    
-    // MARK: - Private methods
-    
-    private func delete(atOffsets indexSet: IndexSet) {
-        items.remove(atOffsets: indexSet)
     }
 }
 

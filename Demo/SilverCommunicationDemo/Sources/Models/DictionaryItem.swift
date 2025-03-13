@@ -6,8 +6,8 @@
 //
 
 struct DictionaryItem: Equatable {
-    var key: String = ""
-    var value: String = ""
+    var key: String
+    var value: String
 }
 
 extension Array where Element == (DictionaryItem) {

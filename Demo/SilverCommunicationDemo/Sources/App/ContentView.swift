@@ -19,7 +19,7 @@ struct ContentView: View {
                     NavigationLink("HTTPBin") {
                         RequestDemoListView(
                             requests: [.get, .post, .put, .delete, .patch],
-                            requestView: requestView
+                            demoContent: requestView
                         )
                         .environmentObject(RequestManager.httpBin)
                         .navigationTitle("HTTPBin")
@@ -27,7 +27,7 @@ struct ContentView: View {
                     NavigationLink("GitHub") {
                         RequestDemoListView(
                             requests: [.repositoryList, .repositoryDetail],
-                            requestView: requestView
+                            demoContent: requestView
                         )
                         .environmentObject(RequestManager.gitHub)
                         .navigationTitle("GitHub")
@@ -35,7 +35,7 @@ struct ContentView: View {
                     NavigationLink("Mock") {
                         RequestDemoListView(
                             requests: DemoRequest.allCases,
-                            requestView: requestView
+                            demoContent: requestView
                         )
                         .environmentObject(RequestManager.mock)
                         .navigationTitle("Mock")

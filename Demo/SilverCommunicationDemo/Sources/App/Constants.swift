@@ -11,13 +11,14 @@ import SilverCommunication
 extension URL {
     static let gitHub: URL = URL(string: "https://api.github.com")!
     static let httpBin: URL = URL(string: "https://httpbin.org")!
+    static let mock: URL = URL(string: "https://thiscouldbeanyurl.com")!
 }
 
 extension RequestManager {
     static let gitHub: RequestManager = RequestManager(baseURL: .gitHub)
     static let httpBin: RequestManager = RequestManager(baseURL: .httpBin)
     static let mock: RequestManager = RequestManager(
-        baseURL: URL(string: "https://thiscouldbeanyurl.com")!,
+        baseURL: .mock,
         mockingMethod: .bundle(name: "Mock", bundle: .main)
     )
 }

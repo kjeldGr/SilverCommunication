@@ -29,7 +29,7 @@ struct RequestDemoView<ContentType, ResponseContent: View>: View {
     @EnvironmentObject private var requestManager: RequestManager
     @State private var isLoading: Bool = false
     @State private var error: PresentableError?
-    @State var response: Response<ContentType>?
+    @State private var response: Response<ContentType>?
     
     // MARK: - View
     
@@ -89,6 +89,8 @@ struct RequestDemoView<ContentType, ResponseContent: View>: View {
     }
 }
 
+// MARK: - RawRequestDemoView
+
 struct RawRequestDemoView: View {
     
     // MARK: - Internal properties
@@ -116,6 +118,8 @@ struct RawRequestDemoView: View {
         }
     }
 }
+
+// MARK: - DecodableRequestDemoView
 
 struct DecodableRequestDemoView<ContentType: Decodable, ResponseContent: View>: View {
     
