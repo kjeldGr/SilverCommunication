@@ -13,8 +13,8 @@ struct RequestDemoListView<Content: View>: View {
     // MARK: - Private properties
     
     private let requests: [DemoRequest]
-    @ViewBuilder let requestView: (DemoRequest) -> Content
     @State private var selectedRequest: DemoRequest
+    @ViewBuilder let demoContent: (DemoRequest) -> Content
     
     // MARK: - Initializers
     
@@ -23,7 +23,7 @@ struct RequestDemoListView<Content: View>: View {
         @ViewBuilder requestView: @escaping (DemoRequest) -> Content
     ) {
         self.requests = requests
-        self.requestView = requestView
+        self.demoContent = requestView
         self._selectedRequest = State(initialValue: requests[0])
     }
     
@@ -41,11 +41,9 @@ struct RequestDemoListView<Content: View>: View {
                 .pickerStyle(.segmented)
                 .padding(16)
             }
-            List {
-                requestView(selectedRequest)
-                    .id(selectedRequest)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
+            demoContent(selectedRequest)
+                .id(selectedRequest)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
@@ -56,9 +54,7 @@ struct RequestDemoListView<Content: View>: View {
     RequestDemoListView(
         requests: [.get]
     ) { request in
-        RawRequestDemoView(
-            context: request.context
-        )
+        RawRequestDemoView(context: request.context)
     }
     .environmentObject(RequestManager(
         baseURL: .httpBin,
@@ -70,9 +66,7 @@ struct RequestDemoListView<Content: View>: View {
     RequestDemoListView(
         requests: [.get, .post]
     ) { request in
-        RawRequestDemoView(
-            context: request.context
-        )
+        RawRequestDemoView(context: request.context)
     }
     .environmentObject(RequestManager(
         baseURL: .httpBin,

@@ -11,7 +11,7 @@ struct TextResponseView: View {
     
     // MARK: - Internal properties
     
-    let data: Data?
+    let data: Data
     
     // MARK: - Private properties
     
@@ -37,16 +37,14 @@ struct TextResponseView: View {
     // MARK: - Private methods
     
     private static func makeFormattedText(
-        data: Data?,
+        data: Data,
         format: TextResponseFormat
     ) -> String {
         do {
-            switch (format, data) {
-            case (_, .none):
-                return "N/A"
-            case (.raw, let data?):
+            switch format {
+            case .raw:
                 return String(decoding: data, as: UTF8.self)
-            case (.json, let data?):
+            case .json:
                 let object = try JSONSerialization.jsonObject(
                     with: data
                 )

@@ -14,7 +14,7 @@ struct RequestView: View {
     
     let baseURL: URL
     @Binding var context: RequestContext
-    let performRequestAction: () -> Void
+    let performRequest: () -> Void
     
     // MARK: - View
     
@@ -40,7 +40,7 @@ struct RequestView: View {
                 )
             }
         }
-        Button("Perform request", action: performRequestAction)
+        Button("Perform request", action: performRequest)
     }
 }
 
