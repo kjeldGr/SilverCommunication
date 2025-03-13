@@ -35,7 +35,7 @@ struct RequestView: View {
         }
         if context.httpMethod.isHTTPBodyFieldVisible {
             Section("HTTP Body") {
-                HTTPBodyView(
+                HTTPBodyContent(
                     httpBody: $context.httpBody
                 )
             }

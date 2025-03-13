@@ -1,5 +1,5 @@
 //
-//  HTTPBodyView.swift
+//  HTTPBodyContent.swift
 //  SilverCommunicationDemo
 //
 //  Created by Kjeld Groot on 11/03/2025.
@@ -8,7 +8,7 @@
 import SilverCommunication
 import SwiftUI
 
-struct HTTPBodyView: View {
+struct HTTPBodyContent: View {
     
     // MARK: - ContentType
     
@@ -88,6 +88,6 @@ struct HTTPBodyView: View {
     @Previewable @State var httpBody: HTTPBody?
     
     List {
-        HTTPBodyView(httpBody: $httpBody)
+        HTTPBodyContent(httpBody: $httpBody)
     }
 }
