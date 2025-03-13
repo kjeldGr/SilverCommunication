@@ -148,24 +148,16 @@ struct DecodableRequestDemoView<ContentType: Decodable, ResponseContent: View>: 
 
 #Preview("Raw Request Demo") {
     RawRequestDemoView(
-        context: RequestContext(path: "/path", httpMethod: .get)
+        context: DemoRequest.get.context
     )
-    .environmentObject(
-        RequestManager(
-            baseURL: .httpBin,
-            mockingMethod: .data(Data("Response".utf8))
-        )
-    )
+    .environmentObject(RequestManager.mock)
 }
 
 #Preview("Decodable Request Demo") {
     DecodableRequestDemoView(
-        context: RequestContext(path: "/path", httpMethod: .get)
+        context: DemoRequest.repositoryList.context
     ) { content in
         GitHubRepositoryList(repositories: content)
     }
-    .environmentObject(RequestManager(
-        baseURL: .gitHub,
-        mockingMethod: .encodable([GitHubRepository.preview])
-    ))
+    .environmentObject(RequestManager.mock)
 }

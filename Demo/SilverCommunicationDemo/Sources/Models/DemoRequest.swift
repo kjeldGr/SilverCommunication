@@ -5,7 +5,7 @@
 //  Created by Kjeld Groot on 13/03/2025.
 //
 
-enum DemoRequest: String, Identifiable {
+enum DemoRequest: String, CaseIterable, Identifiable {
     
     // MARK: - HTTPBin
     

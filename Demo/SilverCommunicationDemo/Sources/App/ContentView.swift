@@ -32,6 +32,14 @@ struct ContentView: View {
                         .environmentObject(RequestManager.gitHub)
                         .navigationTitle("GitHub")
                     }
+                    NavigationLink("Mock") {
+                        RequestDemoListView(
+                            requests: DemoRequest.allCases,
+                            requestView: requestView
+                        )
+                        .environmentObject(RequestManager.mock)
+                        .navigationTitle("Mock")
+                    }
                 }
             }
             .navigationTitle("Demo")

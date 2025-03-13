@@ -16,4 +16,8 @@ extension URL {
 extension RequestManager {
     static let gitHub: RequestManager = RequestManager(baseURL: .gitHub)
     static let httpBin: RequestManager = RequestManager(baseURL: .httpBin)
+    static let mock: RequestManager = RequestManager(
+        baseURL: URL(string: "https://thiscouldbeanyurl.com")!,
+        mockingMethod: .bundle(name: "Mock", bundle: .main)
+    )
 }

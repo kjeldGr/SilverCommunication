@@ -56,10 +56,7 @@ struct RequestDemoListView<Content: View>: View {
     ) { request in
         RawRequestDemoView(context: request.context)
     }
-    .environmentObject(RequestManager(
-        baseURL: .httpBin,
-        mockingMethod: .data(Data("preview".utf8))
-    ))
+    .environmentObject(RequestManager.mock)
 }
 
 #Preview("Multiple requests") {
@@ -68,8 +65,5 @@ struct RequestDemoListView<Content: View>: View {
     ) { request in
         RawRequestDemoView(context: request.context)
     }
-    .environmentObject(RequestManager(
-        baseURL: .httpBin,
-        mockingMethod: .data(Data("preview".utf8))
-    ))
+    .environmentObject(RequestManager.mock)
 }
