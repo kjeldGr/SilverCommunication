@@ -46,7 +46,7 @@ public final class RequestManager: ObservableObject {
         guard let baseURL = URL(string: baseURL) else {
             throw RequestManagerError.invalidBaseURL
         }
-        self.init(baseURL: baseURL, urlSession: .shared, defaultHeaders: defaultHeaders)
+        self.init(baseURL: baseURL, defaultHeaders: defaultHeaders)
     }
     
     /// Initializer for testing purpose, enables the developer to mock the `URLSession`
