@@ -16,4 +16,15 @@ public extension RequestManager {
         let urlSession = URLSessionMock(mockingMethod: mockingMethod)
         self.init(baseURL: baseURL, urlSession: urlSession, defaultHeaders: defaultHeaders)
     }
+    
+    convenience init(
+        baseURL: String,
+        mockingMethod: MockingMethod,
+        defaultHeaders: [HTTPHeader: String]? = nil
+    ) throws {
+        guard let baseURL = URL(string: baseURL) else {
+            throw RequestManagerError.invalidBaseURL
+        }
+        self.init(baseURL: baseURL, mockingMethod: mockingMethod, defaultHeaders: defaultHeaders)
+    }
 }

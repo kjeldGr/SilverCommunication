@@ -39,8 +39,7 @@ final class RequestManagerTests: XCTestCase {
         }
         """
         data = Data(json.utf8)
-        let baseURL = try XCTUnwrap(URL(string: "https://github.com"))
-        sut = RequestManager(baseURL: baseURL, mockingMethod: .data(data))
+        sut = try RequestManager(baseURL: "https://github.com", mockingMethod: .data(data))
     }
     
     override func tearDown() {
@@ -77,6 +76,17 @@ final class RequestManagerTests: XCTestCase {
     
     func testInitWithBaseURLStringWithInvalidURL() throws {
         try XCTAssertThrowsError(RequestManager(baseURL: "")) { error in
+            switch error {
+            case RequestManagerError.invalidBaseURL:
+                break
+            default:
+                XCTFail("Expected initializer to fail with RequestManagerError.invalidBaseURL, failed with \(String(reflecting: error)) instead.")
+            }
+        }
+    }
+    
+    func testInitWithBaseURLStringWithInvalidURLAndMockingMethod() throws {
+        try XCTAssertThrowsError(RequestManager(baseURL: "", mockingMethod: .data(nil))) { error in
             switch error {
             case RequestManagerError.invalidBaseURL:
                 break
