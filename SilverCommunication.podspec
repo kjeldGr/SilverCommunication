@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.source_files = 'Sources/SilverCommunication/**/*.swift'
 
   s.test_spec 'Tests' do |test_spec|
-    test_spec.source_files = 'Tests/SilverCommunicationTests/*.swift'
+    test_spec.source_files = 'Tests/SilverCommunicationTests/**/*.swift'
     test_spec.resources = 'Tests/SilverCommunicationTests/Resources/*'
   end
 end
