@@ -63,6 +63,8 @@ dependencies: [
 To perform HTTP requests with `SilverCommunication` a `RequestManager` instance will be used. The main goal of using this object is making sure all connections to the same server are handled in the same way. Creating an instance of the `RequestManager` is done by passing the base URL of the server that it will communicate with:
 
 ```swift
+import SilverCommunication
+
 let urlString = "https://httpbin.org"
 
 var requestManager = RequestManager(baseURL: URL(string: urlString)!)
@@ -197,6 +199,8 @@ struct ContentView: View {
 The `Request` model contains all properties related to the specific request to the server. Some examples of how to configure it is shown below. For detailed documentation on passing a HTTP body to the request, see [HTTPBody](#httpbody).
 
 ```swift
+import SilverCommunication
+
 // GET request with a path and query parameters (GET is the default HTTP method)
 var request = Request(
     path: "/get",
@@ -279,6 +283,8 @@ let body = HTTPBody.multipart(MultipartRequestBody(
 `HTTPBody` contains convenience initializers for JSON content that can be used like:
 
 ```swift
+import SilverCommunication
+
 do {
     let body = try HTTPBody(jsonObject: ["key": "value"])
 } catch {
@@ -373,6 +379,8 @@ do {
 The `DictionaryParser` can be used to parse a `Dictionary` from a JSON response. The `Key` and `Value` are generic types, so it's possible to parse all sorts of dictionaries as long as the `Key` type conforms to `Hashable`.
 
 ```swift
+import SilverCommunication
+
 do {
     let requestManager = try RequestManager(baseURL: "https://httpbin.org")
     // Parsing a (JSON) dictionary from the response (key path is optional)
@@ -439,6 +447,8 @@ For test purposes, `RequestManager` supports response mocking in various ways:
 The `urlResponse` mocking type supports passing a `URLResponse` instance which will be returned in the `perform(request:)` method of the `RequestManager`. Optionally you could provide a `Data` value which will be included as the response content.
 
 ```swift
+import SilverCommunication
+
 do {
     let baseURL = URL(string: "anyURLIsFineHere")!
     let requestManager = try RequestManager(
@@ -462,6 +472,8 @@ do {
 The `data` mocking type supports passing an optional `Data` value which will be returned in the `perform(request:)` method of the `RequestManager`. Optionally you can add a `statusCode` value, which by default is set to 200.
 
 ```swift
+import SilverCommunication
+
 do {
     let requestManager = try RequestManager(
         baseURL: "anyURLIsFineHere",
@@ -481,6 +493,8 @@ do {
 The `encodable` mocking type supports passing an `Encodable` instance which will be returned in the `perform(request:)` method of the `RequestManager`. Optionally you can add a custom `JSONEncoder`, which by default is set to `JSONEncoder()`, and a `statusCode` value, which by default is set to 200.
 
 ```swift
+import SilverCommunication
+
 struct ResponseObject: Codable {
     let key: String
 }
@@ -547,6 +561,8 @@ Example file structure of `Mock.bundle`:
     - path.json
 
 ```swift
+import SilverCommunication
+
 do {
     let requestManager = try RequestManager(
         baseURL: "anyURLIsFineHere",
