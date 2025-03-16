@@ -38,7 +38,11 @@ struct RequestDemoListView<Content: View>: View {
                             .tag($0)
                     }
                 }
+                #if os(watchOS)
+                .pickerStyle(.wheel)
+                #else
                 .pickerStyle(.segmented)
+                #endif
                 .padding(16)
             }
             demoContent(selectedRequest)
