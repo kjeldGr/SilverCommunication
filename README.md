@@ -38,23 +38,58 @@
 
 | Platform  | Version   |
 | --------  | --------- |
-| iOS       | 13.0+     |
-| tvOS      | 13.0+     |
+| iOS       | 13.0+     | 
 | macOS     | 10.15+    |
+| tvOS      | 13.0+     |
+| visionOS  | 1.0+      |
+| watchOS   | 6.0+      |
 
 ## Installation
 
 ### Swift Package Manager
 
+If you're using [Swift Package Manager](https://www.swift.org/documentation/package-manager/) to add `SilverCommunication` to your project's dependencies, you can add the package with Xcode using `File -> Add Package Dependencies...` and enter the GitHub url of the `SilverCode` project. If you need to add it to a project using a `Package.swift` file, add the following package and target dependencies:
+
 ```swift
-dependencies: [
-    .package(url: "https://github.com/kjeldGr/SilverCommunication.git", .upToNextMajor(from: "1.0.0"))
-]
+let package = Package(
+    ...
+    // Package dependency
+    dependencies: [
+        .package(
+            url: "https://github.com/kjeldGr/SilverCommunication.git", 
+            .upToNextMajor(from: "1.0.0")
+        )
+    ],
+    // Target dependency
+    targets: [
+        .target(
+            ...
+            dependencies: [
+                "SilverCommunication"
+            ]
+        )
+    ]
+)
 ```
 
 ### CocoaPods
 
+If you're using [CocoaPods](https://cocoapods.org) to add `SilverCommunication` to your project's dependencies, you can add the package by adding the following to your `Podfile`:
+
+```ruby
+# Make sure this line is present in your Podfile (it should be by default)
+use_frameworks!
+
+pod 'SilverCommunication', '~> 1.0'
+```
+
 ### Carthage
+
+If you're using [Carthage](https://github.com/Carthage/Carthage) to add `SilverCommunication` to your project's dependencies, you can add the package by adding the following to your `Cartfile`:
+
+```
+github "kjeldGr/SilverCommunication" ~> 1.0
+```
 
 ## Usage
 
