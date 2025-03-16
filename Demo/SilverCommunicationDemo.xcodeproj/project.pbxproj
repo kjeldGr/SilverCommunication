@@ -7,22 +7,88 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		433F986E2D85FABD0039EA7B /* SilverCommunicationDemo Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 433F98612D85FABC0039EA7B /* SilverCommunicationDemo Watch App.app */; platformFilters = (ios, macos, xros, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		435DAB9B2D80980F00322202 /* SilverCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = 435DAB9A2D80980F00322202 /* SilverCommunication */; };
+		4398B2542D860092009A731C /* SilverCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = 4398B2532D860092009A731C /* SilverCommunication */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		433F986C2D85FABD0039EA7B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 435DAB752D80931300322202 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 433F98602D85FABC0039EA7B;
+			remoteInfo = "SilverCommunicationDemo Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		433F986F2D85FABD0039EA7B /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				433F986E2D85FABD0039EA7B /* SilverCommunicationDemo Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		433F98612D85FABC0039EA7B /* SilverCommunicationDemo Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SilverCommunicationDemo Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		435DAB7D2D80931300322202 /* SilverCommunicationDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SilverCommunicationDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		43B863C52D85FC1F00F606E7 /* Exceptions for "SilverCommunicationDemo" folder in "SilverCommunicationDemo Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resources/Assets.xcassets,
+				Resources/Mock.bundle,
+				"Resources/Preview Content/Preview Assets.xcassets",
+				Sources/App/Constants.swift,
+				Sources/App/ContentView.swift,
+				Sources/App/SilverCommunicationDemoApp.swift,
+				Sources/Components/ArrayContent.swift,
+				Sources/Components/HTTPBodyContent.swift,
+				Sources/Components/RequestResponseView.swift,
+				Sources/Components/RequestView.swift,
+				Sources/Components/TextContent.swift,
+				Sources/Components/TextResponseView.swift,
+				Sources/GitHub/GitHubRepository.swift,
+				Sources/GitHub/GitHubRepositoryList.swift,
+				Sources/Models/DemoRequest.swift,
+				Sources/Models/DictionaryItem.swift,
+				Sources/Models/RequestContext.swift,
+				"Sources/Request Demo/RequestDemoListView.swift",
+				"Sources/Request Demo/RequestDemoView.swift",
+			);
+			target = 433F98602D85FABC0039EA7B /* SilverCommunicationDemo Watch App */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		435DAB7F2D80931300322202 /* SilverCommunicationDemo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				43B863C52D85FC1F00F606E7 /* Exceptions for "SilverCommunicationDemo" folder in "SilverCommunicationDemo Watch App" target */,
+			);
 			path = SilverCommunicationDemo;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		433F985E2D85FABC0039EA7B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4398B2542D860092009A731C /* SilverCommunication in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		435DAB7A2D80931300322202 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -38,6 +104,7 @@
 			isa = PBXGroup;
 			children = (
 				435DAB7F2D80931300322202 /* SilverCommunicationDemo */,
+				4398B2522D860092009A731C /* Frameworks */,
 				435DAB7E2D80931300322202 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -46,13 +113,41 @@
 			isa = PBXGroup;
 			children = (
 				435DAB7D2D80931300322202 /* SilverCommunicationDemo.app */,
+				433F98612D85FABC0039EA7B /* SilverCommunicationDemo Watch App.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		4398B2522D860092009A731C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		433F98602D85FABC0039EA7B /* SilverCommunicationDemo Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 433F98722D85FABD0039EA7B /* Build configuration list for PBXNativeTarget "SilverCommunicationDemo Watch App" */;
+			buildPhases = (
+				433F985D2D85FABC0039EA7B /* Sources */,
+				433F985E2D85FABC0039EA7B /* Frameworks */,
+				433F985F2D85FABC0039EA7B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "SilverCommunicationDemo Watch App";
+			packageProductDependencies = (
+				4398B2532D860092009A731C /* SilverCommunication */,
+			);
+			productName = "SilverCommunicationDemo Watch App";
+			productReference = 433F98612D85FABC0039EA7B /* SilverCommunicationDemo Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
 		435DAB7C2D80931300322202 /* SilverCommunicationDemo */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 435DAB8C2D80931500322202 /* Build configuration list for PBXNativeTarget "SilverCommunicationDemo" */;
@@ -60,10 +155,12 @@
 				435DAB792D80931300322202 /* Sources */,
 				435DAB7A2D80931300322202 /* Frameworks */,
 				435DAB7B2D80931300322202 /* Resources */,
+				433F986F2D85FABD0039EA7B /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				433F986D2D85FABD0039EA7B /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				435DAB7F2D80931300322202 /* SilverCommunicationDemo */,
@@ -86,6 +183,9 @@
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
+					433F98602D85FABC0039EA7B = {
+						CreatedOnToolsVersion = 16.2;
+					};
 					435DAB7C2D80931300322202 = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -109,11 +209,19 @@
 			projectRoot = "";
 			targets = (
 				435DAB7C2D80931300322202 /* SilverCommunicationDemo */,
+				433F98602D85FABC0039EA7B /* SilverCommunicationDemo Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		433F985F2D85FABC0039EA7B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		435DAB7B2D80931300322202 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -124,6 +232,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		433F985D2D85FABC0039EA7B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		435DAB792D80931300322202 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -133,7 +248,81 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		433F986D2D85FABD0039EA7B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilters = (
+				ios,
+				macos,
+				xros,
+			);
+			target = 433F98602D85FABC0039EA7B /* SilverCommunicationDemo Watch App */;
+			targetProxy = 433F986C2D85FABD0039EA7B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		433F98702D85FABD0039EA7B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"SilverCommunicationDemo/Resources/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = SilverCommunicationDemo;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = nl.kpgroot.SilverCommunicationDemo;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.kpgroot.SilverCommunicationDemo.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		433F98712D85FABD0039EA7B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"SilverCommunicationDemo/Resources/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = SilverCommunicationDemo;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = nl.kpgroot.SilverCommunicationDemo;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.kpgroot.SilverCommunicationDemo.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
 		435DAB8A2D80931500322202 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -284,7 +473,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,7";
-				XROS_DEPLOYMENT_TARGET = 2.2;
+				XROS_DEPLOYMENT_TARGET = 1.0;
 			};
 			name = Debug;
 		};
@@ -324,13 +513,22 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,7";
-				XROS_DEPLOYMENT_TARGET = 2.2;
+				XROS_DEPLOYMENT_TARGET = 1.0;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		433F98722D85FABD0039EA7B /* Build configuration list for PBXNativeTarget "SilverCommunicationDemo Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				433F98702D85FABD0039EA7B /* Debug */,
+				433F98712D85FABD0039EA7B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		435DAB782D80931300322202 /* Build configuration list for PBXProject "SilverCommunicationDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -361,6 +559,11 @@
 /* Begin XCSwiftPackageProductDependency section */
 		435DAB9A2D80980F00322202 /* SilverCommunication */ = {
 			isa = XCSwiftPackageProductDependency;
+			productName = SilverCommunication;
+		};
+		4398B2532D860092009A731C /* SilverCommunication */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 435DAB992D80980F00322202 /* XCLocalSwiftPackageReference "../../SilverCommunication" */;
 			productName = SilverCommunication;
 		};
 /* End XCSwiftPackageProductDependency section */
