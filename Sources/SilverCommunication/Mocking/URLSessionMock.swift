@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - URLSessionMock
 
-final class URLSessionMock: URLSession {
+final class URLSessionMock: URLSession, @unchecked Sendable {
     
     // MARK: - Private properties
     
@@ -43,12 +43,11 @@ final class URLSessionMock: URLSession {
     ) -> URLSessionDataTask {
         dataTask(with: URLRequest(url: url), completionHandler: completionHandler)
     }
-    
 }
 
 // MARK: - URLSessionDataTaskMock
 
-private final class URLSessionDataTaskMock: URLSessionDataTask {
+private final class URLSessionDataTaskMock: URLSessionDataTask, @unchecked Sendable {
     
     // MARK: - Private properties
     
@@ -121,5 +120,4 @@ private final class URLSessionDataTaskMock: URLSessionDataTask {
             )
         }
     }
-    
 }
