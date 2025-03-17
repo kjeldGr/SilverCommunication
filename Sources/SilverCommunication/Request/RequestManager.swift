@@ -17,7 +17,7 @@ public enum RequestManagerError: Error {
     case missingData
 }
 
-public final class RequestManager: ObservableObject {
+public final class RequestManager {
     
     // MARK: - Public properties
     
@@ -163,6 +163,7 @@ public final class RequestManager: ObservableObject {
     ///   - request: The `Request` to perform
     ///   - validators: The `ResponseValidator`'s that will be used for response validation
     /// - Returns: The request response
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     @discardableResult
     public func perform(
         request: Request,
@@ -181,6 +182,7 @@ public final class RequestManager: ObservableObject {
     ///   - validators: The `ResponseValidator`'s that will be used for response validation
     ///   - parser: The parser that will be used for the request
     /// - Returns: The data received in the request response, parsed to the passed `Response` type
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     public func perform<P: Parser>(
         request: Request,
         validators: [ResponseValidator] = [StatusCodeValidator()],
@@ -194,6 +196,11 @@ public final class RequestManager: ObservableObject {
     }
     
 }
+
+// MARK: - RequestManager+ObservableObject
+
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+extension RequestManager: ObservableObject {}
 
 // MARK: - Response+Unwrap
 
