@@ -43,7 +43,6 @@ final class URLSessionMock: URLSession, @unchecked Sendable {
     ) -> URLSessionDataTask {
         dataTask(with: URLRequest(url: url), completionHandler: completionHandler)
     }
-    
 }
 
 // MARK: - URLSessionDataTaskMock
@@ -121,5 +120,4 @@ private final class URLSessionDataTaskMock: URLSessionDataTask, @unchecked Senda
             )
         }
     }
-    
 }

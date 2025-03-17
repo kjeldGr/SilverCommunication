@@ -194,13 +194,16 @@ public final class RequestManager {
             }
         }
     }
-    
 }
 
 // MARK: - RequestManager+ObservableObject
 
+#if canImport(Combine)
+import Combine
+
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension RequestManager: ObservableObject {}
+#endif
 
 // MARK: - Response+Unwrap
 
