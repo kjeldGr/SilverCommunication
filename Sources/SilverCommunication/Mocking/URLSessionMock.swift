@@ -49,6 +49,16 @@ final class URLSessionMock: URLSession, @unchecked Sendable {
 
 private final class URLSessionDataTaskMock: URLSessionDataTask, @unchecked Sendable {
     
+    // MARK: - URLSessionDataTask
+    
+    override var originalRequest: URLRequest? {
+        request
+    }
+    
+    override var currentRequest: URLRequest? {
+        originalRequest
+    }
+    
     // MARK: - Private properties
     
     private let request: URLRequest
@@ -95,15 +105,18 @@ private final class URLSessionDataTaskMock: URLSessionDataTask, @unchecked Senda
             )
             return try parse(mockingMethod: .data(data, statusCode: statusCode))
         case let .bundle(bundleName, bundle):
-            guard let url = request.url else {
-                throw Bundle.ParsingError.fileNotFound("\(bundleName).bundle")
+            let path = request.httpMethod.flatMap { httpMethod in
+                request.url.flatMap { url in
+                    URL(string: httpMethod)?.appendingPathComponent(url.path)
+                }?.path
             }
-            let httpMethod = request.httpMethod ?? "GET"
-            let data = try bundle.dataFromBundle(
-                withName: bundleName,
-                forPath: "\(httpMethod)/\(url.path)",
-                withExtension: "json"
-            )
+            let data = try path.flatMap {
+                try bundle.dataFromBundle(
+                    withName: bundleName,
+                    forPath: $0,
+                    withExtension: "json"
+                )
+            }
             return try parse(mockingMethod: .data(data, statusCode: 200))
         case let .error(error):
             throw error

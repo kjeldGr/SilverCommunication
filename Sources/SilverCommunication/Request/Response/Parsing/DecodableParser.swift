@@ -35,9 +35,15 @@ public struct DecodableParser<ResultType: Decodable>: Parser {
             case let value as [Any]:
                 content = try jsonDecoder.decode(ResultType.self, from: JSONSerialization.data(withJSONObject: value))
             case .some:
-                throw ParserError.invalidData(response.content)
+                throw ValueError.invalidValue(
+                    response.content,
+                    context: ValueError.Context(keyPath: \Response<Data>.content)
+                )
             case .none:
-                throw ParserError.missingData
+                throw ValueError.invalidValue(
+                    nil,
+                    context: ValueError.Context(keyPath: \Response<Data>.content)
+                )
             }
         } else {
             content = try jsonDecoder.decode(ResultType.self, from: response.content)

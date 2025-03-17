@@ -47,10 +47,12 @@ class ParserTestCase<P: TestableParser>: XCTestCase {
         let data = try JSONSerialization.data(withJSONObject: invalidResult!)
         try XCTAssertThrowsError(sut.parse(response: Response(statusCode: 200, headers: [:], content: data)).content) { error in
             switch error {
-            case let ParserError.invalidData(parserData):
-                XCTAssertEqual(data, parserData)
+            case let ValueError.invalidValue(parserData, context as ValueError.Context<Response<Data>, Data>):
+                XCTAssertEqual(data, parserData as? Data)
+                XCTAssertEqual(context.keyPath, \.content)
+                XCTAssertNil(context.underlyingError)
             default:
-                XCTFail("Expected parse(data:) to fail with ParserError.invalidData, failed with \(String(reflecting: error)) instead.")
+                XCTFail("Expected parse(data:) to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
             }
         }
     }
@@ -64,10 +66,12 @@ class ParserTestCase<P: TestableParser>: XCTestCase {
         let data = try JSONSerialization.data(withJSONObject: ["keyPath": invalidResult])
         try XCTAssertThrowsError(sut.parse(response: Response(statusCode: 200, headers: [:], content: data))) { error in
             switch error {
-            case let ParserError.invalidData(parserData):
-                XCTAssertEqual(data, parserData)
+            case let ValueError.invalidValue(parserData, context as ValueError.Context<Response<Data>, Data>):
+                XCTAssertEqual(data, parserData as? Data)
+                XCTAssertEqual(context.keyPath, \.content)
+                XCTAssertNil(context.underlyingError)
             default:
-                XCTFail("Expected parse(data:) to fail with ParserError.invalidData, failed with \(String(reflecting: error)) instead.")
+                XCTFail("Expected parse(data:) to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
             }
         }
     }
@@ -76,10 +80,11 @@ class ParserTestCase<P: TestableParser>: XCTestCase {
         let data = try JSONSerialization.data(withJSONObject: ["keyPath": result])
         try XCTAssertThrowsError(sut.parse(response: Response(statusCode: 200, headers: [:], content: data))) { error in
             switch error {
-            case ParserError.missingData:
-                break
+            case let ValueError.invalidValue(.none, context as ValueError.Context<Response<Data>, Data>):
+                XCTAssertEqual(context.keyPath, \.content)
+                XCTAssertNil(context.underlyingError)
             default:
-                XCTFail("Expected parse(data:) to fail with ParserError.noData, failed with \(String(reflecting: error)) instead.")
+                XCTFail("Expected parse(data:) to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
             }
         }
     }

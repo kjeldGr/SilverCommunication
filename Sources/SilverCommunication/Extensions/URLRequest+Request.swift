@@ -9,12 +9,6 @@ import Foundation
 
 extension URLRequest {
     
-    // MARK: - Error
-    
-    enum Error: Swift.Error {
-        case invalidURL
-    }
-    
     // MARK: - Initializers
     
     init(baseURL: URL, request: Request) throws {
@@ -22,7 +16,7 @@ extension URLRequest {
         guard let urlString = url.absoluteString.removingPercentEncoding,
               let url = URL(string: urlString),
               var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
-            throw Error.invalidURL
+            throw ValueError.invalidValue(url, context: ValueError.Context(keyPath: \URLRequest.url))
         }
         var request = request
         if let contentType = request.body?.contentType {
@@ -44,7 +38,10 @@ extension URLRequest {
         }
         
         guard let url = urlComponents.url else {
-            throw Error.invalidURL
+            throw ValueError.invalidValue(
+                urlComponents.url,
+                context: ValueError.Context(keyPath: \URLComponents.url)
+            )
         }
         
         var urlRequest = URLRequest(url: url)
