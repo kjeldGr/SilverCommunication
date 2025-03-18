@@ -21,11 +21,11 @@ final class RequestManagerTests: XCTestCase {
     private var request: Request!
     private var data: Data!
     private var bundle: Bundle {
-#if SWIFT_PACKAGE
+        #if SWIFT_PACKAGE
         return Bundle.module
-#else
+        #else
         return Bundle(for: Self.self)
-#endif
+        #endif
     }
     
     // MARK: - XCTestCase
