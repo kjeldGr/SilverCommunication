@@ -139,6 +139,7 @@ func performRequest(completion: @escaping (Result<Data?, Error>) -> Void) {
     requestManager.perform(request: request) { result in
         do {
             let response = try result.get()
+            
             debugPrint(response.statusCode) // 200
             debugPrint(response.headers) // `[String: String]` value of the response headers
             debugPrint(response.content) // Optional `Data` value with the content of the response
@@ -381,7 +382,7 @@ do {
 
 #### DecodableParser
 
-The `DecodableParser` can be used to parse a `Decodable` type from a JSON response.
+The `DecodableParser` can be used to parse any `Decodable` type from a JSON response.
 
 ```swift
 import SilverCommunication
@@ -426,19 +427,23 @@ do {
 
 #### Custom Parsers
 
-If you would like to create your own `Parser` type, just create a new type that conforms to the `Parser` protocol. For example a `Parser` that maps the response `Data` to a (UTF-8 encoded) `String` would look like this:
+If you would like to create your own `Parser` type, just create a new type that conforms to the `Parser` protocol. For example a `Parser` that decodes a `Base-64` encoded `Data` value could look something like:
 
 ```swift
 import Foundation
 import SilverCommunication
 
-struct StringParser: Parser {
-    func parse(response: Response<Data>) throws -> Response<String> {
-        return Response(
-            statusCode: response.statusCode,
-            headers: response.headers, 
-            content: String(decoding: response.content, as: UTF8.self)
-        )
+struct Base64Parser: Parser {
+    func parse(response: Response<Data>) throws -> Response<Data> {
+        try response.map { content in
+            guard let decodedData = Data(base64Encoded: content) else {
+                throw ValueError.invalidValue(
+                    content,
+                    context: ValueError.Context(keyPath: \Response<ContentType>.content)
+                )
+            }
+            return decodedData
+        }
     }
 }
 ```
