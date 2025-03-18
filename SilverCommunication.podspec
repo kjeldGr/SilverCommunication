@@ -14,6 +14,7 @@ Pod::Spec.new do |s|
   s.visionos.deployment_target = '1.0'
   s.watchos.deployment_target = '4.0'
 
+  s.swift_versions = ['5.9']
   s.source_files = 'Sources/SilverCommunication/**/*.swift'
 
   s.test_spec 'Tests' do |test_spec|
