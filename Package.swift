@@ -1,4 +1,4 @@
-// swift-tools-version: 5.7
+// swift-tools-version: 5.9
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,8 +6,11 @@ import PackageDescription
 let package = Package(
     name: "SilverCommunication",
     platforms: [
-        .iOS(.v13),
-        .macOS(.v10_15)
+        .iOS(.v12),
+        .macOS(.v10_13),
+        .tvOS(.v12),
+        .visionOS(.v1),
+        .watchOS(.v4)
     ],
     products: [
         .library(
@@ -17,7 +20,6 @@ let package = Package(
             ]
         )
     ],
-    dependencies: [],
     targets: [
         .target(
             name: "SilverCommunication"
