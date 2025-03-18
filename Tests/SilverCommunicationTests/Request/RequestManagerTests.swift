@@ -90,17 +90,17 @@ final class RequestManagerTests: XCTestCase {
     }
     
     func testInitWithBaseURLStringWithInvalidURLAndMockingMethod() throws {
-            try XCTAssertThrowsError(RequestManager(baseURL: "", mockingMethod: .data(nil))) { error in
-                switch error {
-                case let ValueError.invalidValue(value, context as ValueError.Context<RequestManager, URL>):
-                    XCTAssertEqual(value as? String, "")
-                    XCTAssertEqual(context.keyPath, \.baseURL)
-                    XCTAssertNil(context.underlyingError)
-                default:
-                    XCTFail("Expected initializer to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
-                }
+        try XCTAssertThrowsError(RequestManager(baseURL: "", mockingMethod: .data(nil))) { error in
+            switch error {
+            case let ValueError.invalidValue(value, context as ValueError.Context<RequestManager, URL>):
+                XCTAssertEqual(value as? String, "")
+                XCTAssertEqual(context.keyPath, \.baseURL)
+                XCTAssertNil(context.underlyingError)
+            default:
+                XCTFail("Expected initializer to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
             }
         }
+    }
     
     // MARK: Default headers
     
