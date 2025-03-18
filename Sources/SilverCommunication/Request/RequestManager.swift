@@ -143,7 +143,7 @@ public final class RequestManager {
         validators: [ResponseValidator] = [StatusCodeValidator()],
         parser: P,
         callbackQueue: DispatchQueue = .main,
-        completion: @escaping (Result<Response<P.ResultType>, Error>) -> Void
+        completion: @escaping (Result<Response<P.ContentType>, Error>) -> Void
     ) -> URLSessionTask? {
         perform(request: request, validators: validators, callbackQueue: callbackQueue) { result in
             do {
@@ -188,7 +188,7 @@ public final class RequestManager {
         request: Request,
         validators: [ResponseValidator] = [StatusCodeValidator()],
         parser: P
-    ) async throws -> Response<P.ResultType> {
+    ) async throws -> Response<P.ContentType> {
         try await withCheckedThrowingContinuation { continuation in
             perform(request: request, validators: validators, parser: parser) { result in
                 continuation.resume(with: result)

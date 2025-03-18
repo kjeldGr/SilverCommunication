@@ -1,6 +1,6 @@
 //
 //  ResponseValidator.swift
-//  
+//  SilverCommunication
 //
 //  Created by Kjeld Groot on 20/03/2023.
 //

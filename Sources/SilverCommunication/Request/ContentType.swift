@@ -1,6 +1,6 @@
 //
 //  ContentType.swift
-//
+//  SilverCommunication
 //
 //  Created by Kjeld Groot on 03/04/2024.
 //

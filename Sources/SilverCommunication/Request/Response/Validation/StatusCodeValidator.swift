@@ -1,6 +1,6 @@
 //
 //  StatusCodeValidator.swift
-//  
+//  SilverCommunication
 //
 //  Created by Kjeld Groot on 21/03/2023.
 //
