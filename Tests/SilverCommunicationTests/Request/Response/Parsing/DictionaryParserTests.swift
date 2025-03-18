@@ -13,8 +13,8 @@ import XCTest
 
 @testable import SilverCommunication
 
-extension DictionaryParser: TestableParser where ResultType: Equatable {
-    typealias TestableResultType = ResultType
+extension DictionaryParser: TestableParser where ContentType: Equatable {
+    typealias TestableContentType = ContentType
 }
 
 final class DictionaryParserTests: ParserTestCase<DictionaryParser<String, String>> {

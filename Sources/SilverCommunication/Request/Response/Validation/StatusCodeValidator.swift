@@ -1,15 +1,11 @@
 //
 //  StatusCodeValidator.swift
-//  
+//  SilverCommunication
 //
 //  Created by Kjeld Groot on 21/03/2023.
 //
 
 import Foundation
-
-public enum StatusCodeValidatorError: Error {
-    case invalidStatusCode(Int)
-}
 
 public struct StatusCodeValidator: ResponseValidator {
     public let validStatusCodes: Set<Int>
@@ -26,7 +22,10 @@ public struct StatusCodeValidator: ResponseValidator {
     
     public func validate(response: Response<Data?>) throws {
         if !validStatusCodes.contains(response.statusCode) {
-            throw StatusCodeValidatorError.invalidStatusCode(response.statusCode)
+            throw ValueError.invalidValue(
+                response.statusCode,
+                context: ValueError.Context(keyPath: \Response<Data?>.statusCode)
+            )
         }
     }
 }

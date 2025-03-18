@@ -25,20 +25,24 @@ final class StatusCodeValidatorTests: XCTestCase {
         statusCode = 199
         try XCTAssertThrowsError(sut.validate(response: makeResponse(statusCode: statusCode))) { error in
             switch error {
-            case StatusCodeValidatorError.invalidStatusCode(statusCode):
-                break
+            case let ValueError.invalidValue(invalidStatusCode, context as ValueError.Context<Response<Data?>, Int>):
+                XCTAssertEqual(statusCode, invalidStatusCode as? Int)
+                XCTAssertEqual(context.keyPath, \.statusCode)
+                XCTAssertNil(context.underlyingError)
             default:
-                XCTFail("Expected validate(response:) to fail with StatusCodeValidatorError.invalidStatusCode(\(statusCode)), failed with \(String(reflecting: error)) instead.")
+                XCTFail("Expected validate(response:) to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
             }
         }
         
         statusCode = 300
         try XCTAssertThrowsError(sut.validate(response: makeResponse(statusCode: statusCode))) { error in
             switch error {
-            case StatusCodeValidatorError.invalidStatusCode(statusCode):
-                break
+            case let ValueError.invalidValue(invalidStatusCode, context as ValueError.Context<Response<Data?>, Int>):
+                XCTAssertEqual(statusCode, invalidStatusCode as? Int)
+                XCTAssertEqual(context.keyPath, \.statusCode)
+                XCTAssertNil(context.underlyingError)
             default:
-                XCTFail("Expected validate(response:) to fail with StatusCodeValidatorError.invalidStatusCode(\(statusCode)), failed with \(String(reflecting: error)) instead.")
+                XCTFail("Expected validate(response:) to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
             }
         }
     }
@@ -51,20 +55,24 @@ final class StatusCodeValidatorTests: XCTestCase {
         statusCode = 199
         try XCTAssertThrowsError(sut.validate(response: makeResponse(statusCode: statusCode))) { error in
             switch error {
-            case StatusCodeValidatorError.invalidStatusCode(statusCode):
-                break
+            case let ValueError.invalidValue(invalidStatusCode, context as ValueError.Context<Response<Data?>, Int>):
+                XCTAssertEqual(statusCode, invalidStatusCode as? Int)
+                XCTAssertEqual(context.keyPath, \.statusCode)
+                XCTAssertNil(context.underlyingError)
             default:
-                XCTFail("Expected validate(response:) to fail with StatusCodeValidatorError.invalidStatusCode(\(statusCode)), failed with \(String(reflecting: error)) instead.")
+                XCTFail("Expected validate(response:) to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
             }
         }
         
         statusCode = 300
         try XCTAssertThrowsError(sut.validate(response: makeResponse(statusCode: statusCode))) { error in
             switch error {
-            case StatusCodeValidatorError.invalidStatusCode(statusCode):
-                break
+            case let ValueError.invalidValue(invalidStatusCode, context as ValueError.Context<Response<Data?>, Int>):
+                XCTAssertEqual(statusCode, invalidStatusCode as? Int)
+                XCTAssertEqual(context.keyPath, \.statusCode)
+                XCTAssertNil(context.underlyingError)
             default:
-                XCTFail("Expected validate(response:) to fail with StatusCodeValidatorError.invalidStatusCode(\(statusCode)), failed with \(String(reflecting: error)) instead.")
+                XCTFail("Expected validate(response:) to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
             }
         }
     }
