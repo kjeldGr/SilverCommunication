@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'SilverCommunication'
-  s.version = '0.15.0'
+  s.version = '0.15.1'
   s.summary = 'A lightweight Swift library used to perform simple HTTP requests.'
   s.license = 'MIT'
   s.homepage = 'https://github.com/kjeldGr/SilverCommunication'
