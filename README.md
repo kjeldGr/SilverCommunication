@@ -488,7 +488,7 @@ import SilverCommunication
 
 do {
     let baseURL = URL(string: "anyURLIsFineHere")!
-    let requestManager = try RequestManager(
+    let requestManager = RequestManager(
         baseURL: baseURL,
         mockingMethod: .response(
             HTTPURLResponse(url: baseURL, statusCode: 200, httpVersion: nil, headerFields: nil),
