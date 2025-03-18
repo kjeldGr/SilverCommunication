@@ -20,8 +20,12 @@ public struct Response<ContentType> {
         self.content = content
     }
     
-    init(httpResponse: HTTPURLResponse, content: Data?) where ContentType == Data? {
-        self.init(statusCode: httpResponse.statusCode, headers: httpResponse.headers, content: content)
+    init(httpURLResponse: HTTPURLResponse, content: ContentType) where ContentType == Data? {
+        self.init(
+            statusCode: httpURLResponse.statusCode,
+            headers: httpURLResponse.headers,
+            content: content
+        )
     }
 }
 
@@ -31,8 +35,21 @@ private extension HTTPURLResponse {
     var headers: [HTTPHeader: String] {
         allHeaderFields.reduce(into: [HTTPHeader: String]()) { partialResult, item in
             let key = item.key.description
-            if let value = value(forHTTPHeaderField: key) {
-                partialResult[key] = value
+            if #available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *) {
+                if let value = value(forHTTPHeaderField: key) {
+                    partialResult[key] = value
+                }
+            } else {
+                switch item.value {
+                case let value as String:
+                    partialResult[key] = value
+                case let value as LosslessStringConvertible:
+                    partialResult[key] = String(value)
+                case let value as NSNumber:
+                    partialResult[key] = value.stringValue
+                default:
+                    break
+                }
             }
         }
     }

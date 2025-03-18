@@ -33,9 +33,14 @@ public struct ArrayParser<Element>: Parser {
         case let content as [Element]:
             return Response(statusCode: response.statusCode, headers: response.headers, content: content)
         case .some:
-            throw ParserError.invalidData(response.content)
+            throw ValueError.invalidValue(
+                response.content,
+                context: ValueError.Context(keyPath: \Response<Data>.content)
+            )
         case .none:
-            throw ParserError.missingData
+            throw ValueError.missingValue(
+                context: ValueError.Context(keyPath: \Response<Data>.content)
+            )
         }
     }
 }

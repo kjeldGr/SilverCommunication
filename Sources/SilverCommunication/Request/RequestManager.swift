@@ -7,17 +7,7 @@
 
 import Foundation
 
-/// Errors that will be thrown by `RequestManager`.
-public enum RequestManagerError: Error {
-    /// Error that indicates the base URL is invalid
-    case invalidBaseURL
-    /// Error that indicates the response is invalid
-    case invalidResponse
-    /// Error that indicates the request response has no data
-    case missingData
-}
-
-public final class RequestManager: ObservableObject {
+public final class RequestManager {
     
     // MARK: - Public properties
     
@@ -44,7 +34,10 @@ public final class RequestManager: ObservableObject {
     ///   - defaultHeaders: These headers will be added to all requests, performed by this `RequestManager`
     public convenience init(baseURL: String, defaultHeaders: [HTTPHeader: String]? = nil) throws {
         guard let baseURL = URL(string: baseURL) else {
-            throw RequestManagerError.invalidBaseURL
+            throw ValueError.invalidValue(
+                baseURL,
+                context: ValueError.Context(keyPath: \RequestManager.baseURL)
+            )
         }
         self.init(baseURL: baseURL, defaultHeaders: defaultHeaders)
     }
@@ -108,16 +101,24 @@ public final class RequestManager: ObservableObject {
         }
         
         // Execute URLRequest
-        let task = urlSession.dataTask(with: urlRequest) { data, response, error in
+        let task = urlSession.dataTask(with: urlRequest) { data, urlResponse, error in
             callbackQueue.async {
                 do {
                     if let error {
                         throw error
                     }
-                    guard let httpResponse = response as? HTTPURLResponse else {
-                        throw RequestManagerError.invalidResponse
+                    guard let urlResponse else {
+                        throw ValueError.missingValue(
+                            context: ValueError.Context(keyPath: \URLSessionDataTask.response)
+                        )
                     }
-                    let response = Response(httpResponse: httpResponse, content: data)
+                    guard let httpURLResponse = urlResponse as? HTTPURLResponse else {
+                        throw ValueError.invalidValue(
+                            urlResponse,
+                            context: ValueError.Context(keyPath: \URLSessionDataTask.response)
+                        )
+                    }
+                    let response = Response(httpURLResponse: httpURLResponse, content: data)
                     try validators.forEach { try $0.validate(response: response) }
                     completion(.success(response))
                 } catch {
@@ -163,6 +164,7 @@ public final class RequestManager: ObservableObject {
     ///   - request: The `Request` to perform
     ///   - validators: The `ResponseValidator`'s that will be used for response validation
     /// - Returns: The request response
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     @discardableResult
     public func perform(
         request: Request,
@@ -181,6 +183,7 @@ public final class RequestManager: ObservableObject {
     ///   - validators: The `ResponseValidator`'s that will be used for response validation
     ///   - parser: The parser that will be used for the request
     /// - Returns: The data received in the request response, parsed to the passed `Response` type
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     public func perform<P: Parser>(
         request: Request,
         validators: [ResponseValidator] = [StatusCodeValidator()],
@@ -192,15 +195,27 @@ public final class RequestManager: ObservableObject {
             }
         }
     }
-    
 }
+
+// MARK: - RequestManager+ObservableObject
+
+#if canImport(Combine)
+import Combine
+
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+extension RequestManager: ObservableObject {}
+#endif
 
 // MARK: - Response+Unwrap
 
 private extension Response where ContentType == Data? {
     func unwrap() throws -> Response<Data> {
         try map { content in
-            guard let content else { throw RequestManagerError.missingData }
+            guard let content else {
+                throw ValueError.missingValue(
+                    context: ValueError.Context(keyPath: \Response<Data>.content)
+                )
+            }
             return content
         }
     }

@@ -23,7 +23,10 @@ public extension RequestManager {
         defaultHeaders: [HTTPHeader: String]? = nil
     ) throws {
         guard let baseURL = URL(string: baseURL) else {
-            throw RequestManagerError.invalidBaseURL
+            throw ValueError.invalidValue(
+                baseURL,
+                context: ValueError.Context(keyPath: \RequestManager.baseURL)
+            )
         }
         self.init(baseURL: baseURL, mockingMethod: mockingMethod, defaultHeaders: defaultHeaders)
     }

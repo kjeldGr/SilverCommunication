@@ -7,11 +7,6 @@
 
 import Foundation
 
-public enum ParserError: Error {
-    case missingData
-    case invalidData(Data)
-}
-
 public protocol Parser<ResultType> {
     associatedtype ResultType
     
