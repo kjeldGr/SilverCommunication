@@ -82,6 +82,7 @@ final class RequestManagerTests: XCTestCase {
             case let ValueError.invalidValue(value, context as ValueError.Context<RequestManager, URL>):
                 XCTAssertEqual(value as? String, "")
                 XCTAssertEqual(context.keyPath, \.baseURL)
+                XCTAssertNil(context.underlyingError)
             default:
                 XCTFail("Expected initializer to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
             }
@@ -94,6 +95,7 @@ final class RequestManagerTests: XCTestCase {
                 case let ValueError.invalidValue(value, context as ValueError.Context<RequestManager, URL>):
                     XCTAssertEqual(value as? String, "")
                     XCTAssertEqual(context.keyPath, \.baseURL)
+                    XCTAssertNil(context.underlyingError)
                 default:
                     XCTFail("Expected initializer to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
                 }
