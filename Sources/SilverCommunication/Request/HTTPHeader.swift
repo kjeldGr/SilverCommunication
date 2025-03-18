@@ -1,6 +1,6 @@
 //
 //  HTTPHeader.swift
-//  
+//  SilverCommunication
 //
 //  Created by Kjeld Groot on 05/04/2024.
 //

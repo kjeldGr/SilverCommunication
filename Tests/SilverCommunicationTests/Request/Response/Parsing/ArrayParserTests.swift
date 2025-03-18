@@ -9,8 +9,8 @@ import XCTest
 
 @testable import SilverCommunication
 
-extension ArrayParser: TestableParser where ResultType: Equatable {
-    typealias TestableResultType = ResultType
+extension ArrayParser: TestableParser where ContentType: Equatable {
+    typealias TestableContentType = ContentType
 }
 
 final class ArrayParserTests: ParserTestCase<ArrayParser<Int>> {

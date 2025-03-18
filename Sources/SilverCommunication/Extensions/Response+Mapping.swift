@@ -1,6 +1,6 @@
 //
 //  Response+Mapping.swift
-//
+//  SilverCommunication
 //
 //  Created by Kjeld Groot on 07/04/2024.
 //

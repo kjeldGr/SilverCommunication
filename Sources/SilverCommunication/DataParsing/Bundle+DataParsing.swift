@@ -1,6 +1,6 @@
 //
 //  Bundle+DataParsing.swift
-//  DataParsing
+//  SilverCommunication
 //
 //  Created by Kjeld Groot on 03/06/2022.
 //
