@@ -7,14 +7,6 @@
 
 import Foundation
 
-/// Errors that will be thrown by `RequestManager`.
-public enum RequestManagerError: Error {
-    /// Error that indicates the response is invalid
-    case invalidResponse
-    /// Error that indicates the request response has no data
-    case missingData
-}
-
 public final class RequestManager {
     
     // MARK: - Public properties
@@ -28,17 +20,31 @@ public final class RequestManager {
     
     // MARK: - Initializers
     
-    /// Initializer for testing purpose, enables the developer to mock the `URLSession`
+    /// Public initializer for the `RequestManager`
     /// - Parameters:
-    ///   - baseURL: The base url for the performed requests
+    ///   - baseURL: The base URL for the performed requests
     ///   - defaultHeaders: These headers will be added to all requests, performed by this `RequestManager`
     public convenience init(baseURL: URL, defaultHeaders: [HTTPHeader: String]? = nil) {
         self.init(baseURL: baseURL, urlSession: .shared, defaultHeaders: defaultHeaders)
     }
     
+    /// Public initializer for the `RequestManager` with added convenience for unwrapping URL strings
+    /// - Parameters:
+    ///   - baseURL: The base URL in String format for the performed requests
+    ///   - defaultHeaders: These headers will be added to all requests, performed by this `RequestManager`
+    public convenience init(baseURL: String, defaultHeaders: [HTTPHeader: String]? = nil) throws {
+        guard let baseURL = URL(string: baseURL) else {
+            throw ValueError.invalidValue(
+                baseURL,
+                context: ValueError.Context(keyPath: \RequestManager.baseURL)
+            )
+        }
+        self.init(baseURL: baseURL, defaultHeaders: defaultHeaders)
+    }
+    
     /// Initializer for testing purpose, enables the developer to mock the `URLSession`
     /// - Parameters:
-    ///   - baseURL: The base url for the performed requests
+    ///   - baseURL: The base URL for the performed requests
     ///   - urlSession: The url session used to create data tasks
     ///   - defaultHeaders: These headers will be added to all requests, performed by this `RequestManager`
     init(baseURL: URL, urlSession: URLSession, defaultHeaders: [HTTPHeader: String]?) {
@@ -95,16 +101,24 @@ public final class RequestManager {
         }
         
         // Execute URLRequest
-        let task = urlSession.dataTask(with: urlRequest) { data, response, error in
+        let task = urlSession.dataTask(with: urlRequest) { data, urlResponse, error in
             callbackQueue.async {
                 do {
                     if let error {
                         throw error
                     }
-                    guard let httpResponse = response as? HTTPURLResponse else {
-                        throw RequestManagerError.invalidResponse
+                    guard let urlResponse else {
+                        throw ValueError.missingValue(
+                            context: ValueError.Context(keyPath: \URLSessionDataTask.response)
+                        )
                     }
-                    let response = Response(httpResponse: httpResponse, content: data)
+                    guard let httpURLResponse = urlResponse as? HTTPURLResponse else {
+                        throw ValueError.invalidValue(
+                            urlResponse,
+                            context: ValueError.Context(keyPath: \URLSessionDataTask.response)
+                        )
+                    }
+                    let response = Response(httpURLResponse: httpURLResponse, content: data)
                     try validators.forEach { try $0.validate(response: response) }
                     completion(.success(response))
                 } catch {
@@ -129,7 +143,7 @@ public final class RequestManager {
         validators: [ResponseValidator] = [StatusCodeValidator()],
         parser: P,
         callbackQueue: DispatchQueue = .main,
-        completion: @escaping (Result<Response<P.ResultType>, Error>) -> Void
+        completion: @escaping (Result<Response<P.ContentType>, Error>) -> Void
     ) -> URLSessionTask? {
         perform(request: request, validators: validators, callbackQueue: callbackQueue) { result in
             do {
@@ -174,10 +188,13 @@ public final class RequestManager {
         request: Request,
         validators: [ResponseValidator] = [StatusCodeValidator()],
         parser: P
-    ) async throws -> Response<P.ResultType> {
-        try await parser.parse(response: perform(request: request, validators: validators).unwrap())
+    ) async throws -> Response<P.ContentType> {
+        try await withCheckedThrowingContinuation { continuation in
+            perform(request: request, validators: validators, parser: parser) { result in
+                continuation.resume(with: result)
+            }
+        }
     }
-    
 }
 
 // MARK: - RequestManager+ObservableObject
@@ -194,7 +211,11 @@ extension RequestManager: ObservableObject {}
 private extension Response where ContentType == Data? {
     func unwrap() throws -> Response<Data> {
         try map { content in
-            guard let content else { throw RequestManagerError.missingData }
+            guard let content else {
+                throw ValueError.missingValue(
+                    context: ValueError.Context(keyPath: \Response<Data>.content)
+                )
+            }
             return content
         }
     }

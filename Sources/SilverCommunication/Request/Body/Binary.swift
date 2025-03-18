@@ -1,6 +1,6 @@
 //
 //  Binary.swift
-//
+//  SilverCommunication
 //
 //  Created by Kjeld Groot on 30/11/2023.
 //

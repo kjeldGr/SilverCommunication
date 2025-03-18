@@ -6,7 +6,6 @@
 //
 
 import XCTest
-import SilverCommunication
 
 @testable import SilverCommunication
 
@@ -18,6 +17,7 @@ final class RequestManagerTests: XCTestCase {
     
     // MARK: - Private properties
     
+    private var baseURLString: String!
     private var request: Request!
     private var data: Data!
     private var bundle: Bundle {
@@ -40,12 +40,13 @@ final class RequestManagerTests: XCTestCase {
         }
         """
         data = Data(json.utf8)
-        let baseURL = try XCTUnwrap(URL(string: "https://github.com"))
-        sut = RequestManager(baseURL: baseURL, mockingMethod: .data(data))
+        baseURLString = "https://github.com"
+        sut = try RequestManager(baseURL: baseURLString, mockingMethod: .data(data))
     }
     
     override func tearDown() {
         sut = nil
+        baseURLString = nil
         data = nil
         request = nil
         
@@ -55,7 +56,15 @@ final class RequestManagerTests: XCTestCase {
     // MARK: - Tests
     
     func testInitialProperties() throws {
-        let baseURL = try XCTUnwrap(URL(string: "https://github.com"))
+        let baseURL = try XCTUnwrap(URL(string: baseURLString))
+        
+        sut = RequestManager(baseURL: baseURL)
+        XCTAssertEqual(sut.baseURL, baseURL)
+        XCTAssertEqual(sut.urlSession, .shared)
+        
+        sut = try RequestManager(baseURL: baseURLString)
+        XCTAssertEqual(sut.baseURL, baseURL)
+        XCTAssertEqual(sut.urlSession, .shared)
         
         sut = RequestManager(baseURL: baseURL)
         XCTAssertEqual(sut.baseURL, baseURL)
@@ -66,6 +75,32 @@ final class RequestManagerTests: XCTestCase {
         XCTAssertEqual(sut.baseURL, baseURL)
         XCTAssertEqual(sut.urlSession, customURLSession)
     }
+    
+    func testInitWithBaseURLStringWithInvalidURL() throws {
+        try XCTAssertThrowsError(RequestManager(baseURL: "")) { error in
+            switch error {
+            case let ValueError.invalidValue(value, context as ValueError.Context<RequestManager, URL>):
+                XCTAssertEqual(value as? String, "")
+                XCTAssertEqual(context.keyPath, \.baseURL)
+                XCTAssertNil(context.underlyingError)
+            default:
+                XCTFail("Expected initializer to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
+            }
+        }
+    }
+    
+    func testInitWithBaseURLStringWithInvalidURLAndMockingMethod() throws {
+            try XCTAssertThrowsError(RequestManager(baseURL: "", mockingMethod: .data(nil))) { error in
+                switch error {
+                case let ValueError.invalidValue(value, context as ValueError.Context<RequestManager, URL>):
+                    XCTAssertEqual(value as? String, "")
+                    XCTAssertEqual(context.keyPath, \.baseURL)
+                    XCTAssertNil(context.underlyingError)
+                default:
+                    XCTFail("Expected initializer to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
+                }
+            }
+        }
     
     // MARK: Default headers
     
@@ -108,11 +143,14 @@ final class RequestManagerTests: XCTestCase {
     
     @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testPerformRequestWithCompletionHandler() async throws {
+        let authorization = "Basic 1234567890"
+        sut.appendDefaultHeader(key: .authorization, value: authorization)
         let response = try await withCheckedThrowingContinuation { continuation in
-            sut.perform(request: request) { result in
+            let task = sut.perform(request: request) { result in
                 XCTAssert(Thread.isMainThread)
                 continuation.resume(with: result)
             }
+            XCTAssertEqual(task?.currentRequest?.allHTTPHeaderFields, [HTTPHeader.authorization: authorization])
         }
         XCTAssertEqual(response.content, data)
     }
@@ -202,13 +240,32 @@ final class RequestManagerTests: XCTestCase {
     }
     
     @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-    func testPerformRequestWithInvalidResponse() async throws {
+    func testPerformRequestWithMissingResponse() async throws {
         sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .response(nil))
         do {
             try await sut.perform(request: request)
-            XCTFail("Expected perform(request:) to fail with RequestManagerError.invalidResponse, succeeded instead.")
-        } catch RequestManagerError.invalidResponse {} catch {
-            XCTFail("Expected perform(request:) to fail with RequestManagerError.invalidResponse, failed with \(String(reflecting: error)) instead.")
+            XCTFail("Expected perform(request:) to fail with ValueError.invalidValue, succeeded instead.")
+        } catch let ValueError.missingValue(context as ValueError.Context<URLSessionDataTask, URLResponse?>) {
+            XCTAssertEqual(context.keyPath, \.response)
+            XCTAssertNil(context.underlyingError)
+        } catch {
+            XCTFail("Expected perform(request:) to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
+        }
+    }
+    
+    func testPerformRequestWithInvalidResponse() async throws {
+        let url = try XCTUnwrap(URL(string: baseURLString))
+        let response = URLResponse(url: url, mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
+        sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .response(response))
+        do {
+            try await sut.perform(request: request)
+            XCTFail("Expected perform(request:) to fail with ValueError.invalidValue, succeeded instead.")
+        } catch let ValueError.invalidValue(invalidResponse, context as ValueError.Context<URLSessionDataTask, URLResponse?>) {
+            XCTAssertEqual(response, invalidResponse as? URLResponse)
+            XCTAssertEqual(context.keyPath, \.response)
+            XCTAssertNil(context.underlyingError)
+        } catch {
+            XCTFail("Expected perform(request:) to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
         }
     }
     
@@ -218,9 +275,13 @@ final class RequestManagerTests: XCTestCase {
         sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .data(data, statusCode: statusCode))
         do {
             try await sut.perform(request: request)
-            XCTFail("Expected perform(request:) to fail with StatusCodeValidatorError.invalidStatusCode(\(statusCode)), succeeded instead.")
-        } catch StatusCodeValidatorError.invalidStatusCode(statusCode) {} catch {
-            XCTFail("Expected perform(request:) to fail with StatusCodeValidatorError.invalidStatusCode(\(statusCode)), failed with \(String(reflecting: error)) instead.")
+            XCTFail("Expected perform(request:) to fail with ValueError.invalidValue, succeeded instead.")
+        } catch let ValueError.invalidValue(invalidStatusCode, context as ValueError.Context<Response<Data?>, Int>) {
+            XCTAssertEqual(statusCode, invalidStatusCode as? Int)
+            XCTAssertEqual(context.keyPath, \.statusCode)
+            XCTAssertNil(context.underlyingError)
+        } catch {
+            XCTFail("Expected perform(request:) to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
         }
     }
     
@@ -229,9 +290,12 @@ final class RequestManagerTests: XCTestCase {
         sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .data(nil))
         do {
             _ = try await sut.perform(request: request, parser: DictionaryParser<String, String>())
-            XCTFail("Expected perform(request:) to fail with RequestManagerError.noData, succeeded instead.")
-        } catch RequestManagerError.missingData {} catch {
-            XCTFail("Expected perform(request:) to fail with RequestManagerError.noData, failed with \(String(reflecting: error)) instead.")
+            XCTFail("Expected perform(request:) to fail with ValueError.invalidValue, succeeded instead.")
+        } catch let ValueError.missingValue(context as ValueError.Context<Response<Data>, Data>) {
+            XCTAssertEqual(context.keyPath, \.content)
+            XCTAssertNil(context.underlyingError)
+        } catch {
+            XCTFail("Expected perform(request:) to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
         }
     }
     
@@ -264,9 +328,9 @@ final class RequestManagerTests: XCTestCase {
         )
         do {
             try await sut.perform(request: request)
-            XCTFail("Expected perform(request:) to fail with Bundle.ParsingError.fileNotFound(\"Invalid.bundle\"), succeeded instead.")
-        } catch Bundle.ParsingError.fileNotFound("Invalid.bundle") {} catch {
-            XCTFail("Expected perform(request:) to fail with Bundle.ParsingError.fileNotFound(\"Invalid.bundle\"), failed with \(String(reflecting: error)) instead.")
+            XCTFail("Expected perform(request:) to fail with FileError.fileNotFound(\"Invalid.bundle\"), succeeded instead.")
+        } catch FileError.fileNotFound("Invalid.bundle") {} catch {
+            XCTFail("Expected perform(request:) to fail with FileError.fileNotFound(\"Invalid.bundle\"), failed with \(String(reflecting: error)) instead.")
         }
     }
     
@@ -288,9 +352,9 @@ final class RequestManagerTests: XCTestCase {
         )
         do {
             try await sut.perform(request: request)
-            XCTFail("Expected perform(request:) to fail with Bundle.ParsingError.fileNotFound(\"invalid.json\"), succeeded instead.")
-        } catch Bundle.ParsingError.fileNotFound("invalid.json") {} catch {
-            XCTFail("Expected perform(request:) to fail with Bundle.ParsingError.fileNotFound(\"invalid.json\"), failed with \(String(reflecting: error)) instead.")
+            XCTFail("Expected perform(request:) to fail with FileError.fileNotFound(\"invalid.json\"), succeeded instead.")
+        } catch FileError.fileNotFound("invalid.json") {} catch {
+            XCTFail("Expected perform(request:) to fail with FileError.fileNotFound(\"invalid.json\"), failed with \(String(reflecting: error)) instead.")
         }
     }
     

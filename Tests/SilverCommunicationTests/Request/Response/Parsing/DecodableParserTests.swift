@@ -13,8 +13,8 @@ import XCTest
 
 @testable import SilverCommunication
 
-extension DecodableParser: TestableParser where ResultType: Equatable {
-    typealias TestableResultType = ResultType
+extension DecodableParser: TestableParser where ContentType: Equatable {
+    typealias TestableContentType = ContentType
 }
 
 final class DecodableParserTests: ParserTestCase<DecodableParser<[String: String]>> {

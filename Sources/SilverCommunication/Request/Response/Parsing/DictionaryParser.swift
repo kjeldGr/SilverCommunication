@@ -1,6 +1,6 @@
 //
 //  DictionaryParser.swift
-//  
+//  SilverCommunication
 //
 //  Created by Kjeld Groot on 21/03/2023.
 //
@@ -22,22 +22,34 @@ public struct DictionaryParser<Key: Hashable, Value>: Parser {
     // MARK: - Parser
     
     public func parse(response: Response<Data>) throws -> Response<[Key: Value]> {
-        guard let rootDictionary = try JSONSerialization.jsonObject(with: response.content) as? [AnyHashable: Any] else {
-            throw ParserError.invalidData(response.content)
-        }
-        var content: Any?
-        if let keyPath {
-            content = NSDictionary(dictionary: rootDictionary).value(forKeyPath: keyPath)
-        } else {
-            content = rootDictionary
-        }
-        switch content {
-        case let content as ResultType:
-            return Response(statusCode: response.statusCode, headers: response.headers, content: content)
-        case .some:
-            throw ParserError.invalidData(response.content)
-        case .none:
-            throw ParserError.missingData
+        try response.map { content in
+            let jsonObject = try JSONSerialization.jsonObject(with: content)
+            guard let rootDictionary = jsonObject as? [AnyHashable: Any] else {
+                throw ValueError.invalidValue(
+                    jsonObject,
+                    context: ValueError.Context(keyPath: \Response<ContentType>.content)
+                )
+            }
+            
+            var content: Any?
+            if let keyPath {
+                content = NSDictionary(dictionary: rootDictionary).value(forKeyPath: keyPath)
+            } else {
+                content = rootDictionary
+            }
+            switch content {
+            case let content as ContentType:
+                return content
+            case let value?:
+                throw ValueError.invalidValue(
+                    value,
+                    context: ValueError.Context(keyPath: \Response<ContentType>.content)
+                )
+            case .none:
+                throw ValueError.missingValue(
+                    context: ValueError.Context(keyPath: \Response<ContentType>.content)
+                )
+            }
         }
     }
 }

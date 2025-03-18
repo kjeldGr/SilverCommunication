@@ -1,6 +1,6 @@
 //
 //  ArrayParser.swift
-//  
+//  SilverCommunication
 //
 //  Created by Kjeld Groot on 21/03/2023.
 //
@@ -22,20 +22,27 @@ public struct ArrayParser<Element>: Parser {
     // MARK: - Parser
     
     public func parse(response: Response<Data>) throws -> Response<[Element]> {
-        var content: Any?
-        if let keyPath {
-            let dictionary = try NSDictionary(dictionary: DictionaryParser().parse(response: response).content)
-            content = dictionary.value(forKeyPath: keyPath)
-        } else {
-            content = try JSONSerialization.jsonObject(with: response.content)
-        }
-        switch content {
-        case let content as [Element]:
-            return Response(statusCode: response.statusCode, headers: response.headers, content: content)
-        case .some:
-            throw ParserError.invalidData(response.content)
-        case .none:
-            throw ParserError.missingData
+        try response.map { content in
+            if let keyPath {
+                let dictionary = try NSDictionary(dictionary: DictionaryParser().parse(response: response).content)
+                return dictionary.value(forKeyPath: keyPath)
+            } else {
+                return try JSONSerialization.jsonObject(with: response.content)
+            }
+        }.map { content in
+            switch content {
+            case let content as [Element]:
+                return content
+            case let value?:
+                throw ValueError.invalidValue(
+                    value,
+                    context: ValueError.Context(keyPath: \Response<ContentType>.content)
+                )
+            case .none:
+                throw ValueError.missingValue(
+                    context: ValueError.Context(keyPath: \Response<ContentType>.content)
+                )
+            }
         }
     }
 }
