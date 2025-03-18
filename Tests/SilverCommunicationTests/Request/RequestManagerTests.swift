@@ -253,6 +253,7 @@ final class RequestManagerTests: XCTestCase {
         }
     }
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testPerformRequestWithInvalidResponse() async throws {
         let url = try XCTUnwrap(URL(string: baseURLString))
         let response = URLResponse(url: url, mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
