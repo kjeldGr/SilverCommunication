@@ -93,17 +93,20 @@ final class RequestManagerTests: XCTestCase {
     
     // MARK: Perform request
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testPerformRequest() async throws {
         let response = try await sut.perform(request: request)
         XCTAssertEqual(response.content, data)
     }
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testPerformRequestWithParser() async throws {
         let response = try await sut.perform(request: request, parser: DictionaryParser<String, String>())
         let dictionary = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: String])
         XCTAssertEqual(response.content, dictionary)
     }
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testPerformRequestWithCompletionHandler() async throws {
         let response = try await withCheckedThrowingContinuation { continuation in
             sut.perform(request: request) { result in
@@ -114,6 +117,7 @@ final class RequestManagerTests: XCTestCase {
         XCTAssertEqual(response.content, data)
     }
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testPerformRequestWithErrorWithCompletionHandler() async throws {
         sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .error(URLError(.notConnectedToInternet)))
         do {
@@ -129,6 +133,7 @@ final class RequestManagerTests: XCTestCase {
         }
     }
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testPerformRequestWithCompletionHandlerOnDifferentThread() async throws {
         let dispatchQueue = DispatchQueue(label: "Test")
         let response = try await withCheckedThrowingContinuation { continuation in
@@ -142,6 +147,7 @@ final class RequestManagerTests: XCTestCase {
         XCTAssertEqual(response.content, data)
     }
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testPerformRequestWithCompletionHandlerWithParser() async throws {
         let response = try await withCheckedThrowingContinuation { continuation in
             sut.perform(request: request, parser: DictionaryParser<String, String>()) { result in
@@ -153,6 +159,7 @@ final class RequestManagerTests: XCTestCase {
         XCTAssertEqual(response.content, dictionary)
     }
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testPerformRequestWithErrorWithCompletionHandlerWithParser() async throws {
         sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .error(URLError(.notConnectedToInternet)))
         do {
@@ -168,6 +175,7 @@ final class RequestManagerTests: XCTestCase {
         }
     }
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testPerformRequestWithCompletionHandlerWithParserOnDifferentThread() async throws {
         let dispatchQueue = DispatchQueue(label: "Test")
         let response = try await withCheckedThrowingContinuation { continuation in
@@ -182,6 +190,7 @@ final class RequestManagerTests: XCTestCase {
         XCTAssertEqual(response.content, dictionary)
     }
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testPerformRequestWithError() async throws {
         sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .error(URLError(.notConnectedToInternet)))
         do {
@@ -192,6 +201,7 @@ final class RequestManagerTests: XCTestCase {
         }
     }
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testPerformRequestWithInvalidResponse() async throws {
         sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .response(nil))
         do {
@@ -202,6 +212,7 @@ final class RequestManagerTests: XCTestCase {
         }
     }
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testPerformRequestWithInvalidStatusCode() async throws {
         let statusCode = 400
         sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .data(data, statusCode: statusCode))
@@ -213,6 +224,7 @@ final class RequestManagerTests: XCTestCase {
         }
     }
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testPerformRequestWithMissingData() async throws {
         sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .data(nil))
         do {
@@ -225,6 +237,7 @@ final class RequestManagerTests: XCTestCase {
     
     // MARK: Mocking
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testDataMocking() async throws {
         let json = try await sut.perform(
             request: request,
@@ -233,6 +246,7 @@ final class RequestManagerTests: XCTestCase {
         XCTAssertEqual(json["mockingMethod"], "data")
     }
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testBundleMocking() async throws {
         sut = RequestManager(
             baseURL: sut.baseURL,
@@ -256,6 +270,7 @@ final class RequestManagerTests: XCTestCase {
         }
     }
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testFileMocking() async throws {
         sut = RequestManager(
             baseURL: sut.baseURL,
@@ -279,6 +294,7 @@ final class RequestManagerTests: XCTestCase {
         }
     }
     
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testEncodableMocking() async throws {
         sut = RequestManager(
             baseURL: sut.baseURL,
