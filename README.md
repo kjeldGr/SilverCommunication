@@ -32,17 +32,18 @@
         - [Bundle](#bundle)
         - [Error](#error)
 - [Demo app](#demo-app)
+- [License](#license)
 
 
 ## Requirements
 
 | Platform  | Version   |
 | --------  | --------- |
-| iOS       | 13.0+     | 
-| macOS     | 10.15+    |
-| tvOS      | 13.0+     |
+| iOS       | 12.0+     | 
+| macOS     | 10.13+    |
+| tvOS      | 12.0+     |
 | visionOS  | 1.0+      |
-| watchOS   | 6.0+      |
+| watchOS   | 4.0+      |
 
 ## Installation
 
@@ -57,7 +58,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/kjeldGr/SilverCommunication.git", 
-            .upToNextMajor(from: "1.0.0")
+            .upToNextMinor(from: "0.14.1")
         )
     ],
     // Target dependency
@@ -80,7 +81,7 @@ If you're using [CocoaPods](https://cocoapods.org) to add `SilverCommunication` 
 # Make sure this line is present in your Podfile (it should be by default)
 use_frameworks!
 
-pod 'SilverCommunication', '~> 1.0'
+pod 'SilverCommunication', '~> 0.14.1'
 ```
 
 ### Carthage
@@ -88,7 +89,7 @@ pod 'SilverCommunication', '~> 1.0'
 If you're using [Carthage](https://github.com/Carthage/Carthage) to add `SilverCommunication` to your project's dependencies, you can add the package by adding the following to your `Cartfile`:
 
 ```
-github "kjeldGr/SilverCommunication" ~> 1.0
+github "kjeldGr/SilverCommunication" ~> 0.14.1
 ```
 
 ## Usage
@@ -101,7 +102,6 @@ To perform HTTP requests with `SilverCommunication` a `RequestManager` instance 
 import SilverCommunication
 
 let urlString = "https://httpbin.org"
-
 var requestManager = RequestManager(baseURL: URL(string: urlString)!)
 
 // The base URL can also be passed as String value, however the initializer raises an Error when the String has an invalid URL format
@@ -120,24 +120,22 @@ After creating the `RequestManage`, it can be used to perform HTTP requests usin
 import Foundation
 import SilverCommunication
 
-let requestManager = try RequestManager(baseURL: URL(string: "https://httpbin.org")!)
+let requestManager = RequestManager(baseURL: URL(string: "https://httpbin.org")!)
 let request = Request(path: "/get")
 
 // Async await
-func performRequest() async throws -> Data {
+func performRequest() async throws -> Data? {
     let response = try await requestManager.perform(request: request)
+    
     debugPrint(response.statusCode) // 200
     debugPrint(response.headers) // `[String: String]` value of the response headers
     debugPrint(response.content) // Optional `Data` value with the content of the response
     
-    guard let data = response.content else {
-        throw RequestManagerError.missingData
-    }
     return data
 }
 
 // Completion handler
-func performRequest(completion: @escaping (Result<Data, Error>) -> Void) {
+func performRequest(completion: @escaping (Result<Data?, Error>) -> Void) {
     requestManager.perform(request: request) { result in
         do {
             let response = try result.get()
@@ -145,9 +143,6 @@ func performRequest(completion: @escaping (Result<Data, Error>) -> Void) {
             debugPrint(response.headers) // `[String: String]` value of the response headers
             debugPrint(response.content) // Optional `Data` value with the content of the response
             
-            guard let data = response.content else {
-                throw RequestManagerError.missingData
-            }
             completion(.success(data))
         } catch {
             completion(.failure(error))
@@ -168,11 +163,11 @@ struct Item: Decodable {
     let url: URL
 }
 
-let requestManager = try RequestManager(baseURL: URL(string: "https://httpbin.org")!)
-
 func fetchItem() async throws -> Item {
+    let requestManager = try RequestManager(baseURL: "https://httpbin.org")
     return try await requestManager.perform(
-        request: Request(path: "/get"), parser: DecodableParser()
+        request: Request(path: "/get"),
+        parser: DecodableParser()
     ).content
 }
 ```
@@ -467,7 +462,9 @@ import SilverCommunication
 struct DataValidator: ResponseValidator {
     func validate(response: Response<Data?>) throws {
         if response.content == nil {
-            throw RequestManagerError.missingData
+            throw ValueError.missingValue(
+                context: ValueError.Context(keyPath: \Response<Data?>.content)
+            )
         }
     }
 }
@@ -611,7 +608,7 @@ do {
     response = try await requestManager.perform(
         request: Request(httpMethod: .post, path: "/path")
     )
-    // Will result in ParsingError.fileNotFound("GET/unknown.json")
+    // Will result in FileError.fileNotFound("GET/unknown.json")
     response = try await requestManager.perform(
         request: Request(httpMethod: .put, path: "/unknown")
     )
