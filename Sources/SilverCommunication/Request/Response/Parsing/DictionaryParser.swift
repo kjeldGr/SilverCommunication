@@ -23,12 +23,14 @@ public struct DictionaryParser<Key: Hashable, Value>: Parser {
     
     public func parse(response: Response<Data>) throws -> Response<[Key: Value]> {
         try response.map { content in
-            guard let rootDictionary = try JSONSerialization.jsonObject(with: content) as? [AnyHashable: Any] else {
+            let jsonObject = try JSONSerialization.jsonObject(with: content)
+            guard let rootDictionary = jsonObject as? [AnyHashable: Any] else {
                 throw ValueError.invalidValue(
-                    content,
-                    context: ValueError.Context(keyPath: \Response<Data>.content)
+                    jsonObject,
+                    context: ValueError.Context(keyPath: \Response<ContentType>.content)
                 )
             }
+            
             var content: Any?
             if let keyPath {
                 content = NSDictionary(dictionary: rootDictionary).value(forKeyPath: keyPath)
@@ -38,14 +40,14 @@ public struct DictionaryParser<Key: Hashable, Value>: Parser {
             switch content {
             case let content as ContentType:
                 return content
-            case .some:
+            case let value?:
                 throw ValueError.invalidValue(
-                    response.content,
-                    context: ValueError.Context(keyPath: \Response<Data>.content)
+                    value,
+                    context: ValueError.Context(keyPath: \Response<ContentType>.content)
                 )
             case .none:
                 throw ValueError.missingValue(
-                    context: ValueError.Context(keyPath: \Response<Data>.content)
+                    context: ValueError.Context(keyPath: \Response<ContentType>.content)
                 )
             }
         }
