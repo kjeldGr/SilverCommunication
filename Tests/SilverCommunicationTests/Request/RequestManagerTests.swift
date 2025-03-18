@@ -46,6 +46,7 @@ final class RequestManagerTests: XCTestCase {
     
     override func tearDown() {
         sut = nil
+        baseURLString = nil
         data = nil
         request = nil
         
@@ -55,7 +56,6 @@ final class RequestManagerTests: XCTestCase {
     // MARK: - Tests
     
     func testInitialProperties() throws {
-        let baseURLString = "https://github.com"
         let baseURL = try XCTUnwrap(URL(string: baseURLString))
         
         sut = RequestManager(baseURL: baseURL)
