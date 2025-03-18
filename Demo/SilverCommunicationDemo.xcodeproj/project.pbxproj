@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		433F986E2D85FABD0039EA7B /* SilverCommunicationDemo Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 433F98612D85FABC0039EA7B /* SilverCommunicationDemo Watch App.app */; platformFilters = (ios, macos, xros, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		433F986E2D85FABD0039EA7B /* SilverCommunicationDemo Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 433F98612D85FABC0039EA7B /* SilverCommunicationDemo Watch App.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		435DAB9B2D80980F00322202 /* SilverCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = 435DAB9A2D80980F00322202 /* SilverCommunication */; };
 		4398B2542D860092009A731C /* SilverCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = 4398B2532D860092009A731C /* SilverCommunication */; };
 /* End PBXBuildFile section */
@@ -251,11 +251,7 @@
 /* Begin PBXTargetDependency section */
 		433F986D2D85FABD0039EA7B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			platformFilters = (
-				ios,
-				macos,
-				xros,
-			);
+			platformFilter = ios;
 			target = 433F98602D85FABC0039EA7B /* SilverCommunicationDemo Watch App */;
 			targetProxy = 433F986C2D85FABD0039EA7B /* PBXContainerItemProxy */;
 		};
