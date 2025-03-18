@@ -1,13 +1,13 @@
 //
 //  DecodableParser.swift
-//  
+//  SilverCommunication
 //
 //  Created by Kjeld Groot on 21/03/2023.
 //
 
 import Foundation
 
-public struct DecodableParser<ResultType: Decodable>: Parser {
+public struct DecodableParser<ContentType: Decodable>: Parser {
     
     // MARK: - Public properties
     
@@ -23,17 +23,19 @@ public struct DecodableParser<ResultType: Decodable>: Parser {
     
     // MARK: - Parser
     
-    public func parse(response: Response<Data>) throws -> Response<ResultType> {
-        let content: ResultType
-        if let keyPath = keyPath {
-            let dictionary = try NSDictionary(dictionary: DictionaryParser().parse(response: response).content)
-            switch dictionary.value(forKeyPath: keyPath) {
-            case let value as ResultType:
-                content = value
+    public func parse(response: Response<Data>) throws -> Response<ContentType> {
+        guard let keyPath else {
+            return try response.map { try jsonDecoder.decode(ContentType.self, from: $0) }
+        }
+        
+        return try DictionaryParser().parse(response: response).map { content in
+            switch NSDictionary(dictionary: content).value(forKeyPath: keyPath) {
+            case let value as ContentType:
+                return value
             case let value as [AnyHashable: Any]:
-                content = try jsonDecoder.decode(ResultType.self, from: JSONSerialization.data(withJSONObject: value))
+                return try jsonDecoder.decode(ContentType.self, from: JSONSerialization.data(withJSONObject: value))
             case let value as [Any]:
-                content = try jsonDecoder.decode(ResultType.self, from: JSONSerialization.data(withJSONObject: value))
+                return try jsonDecoder.decode(ContentType.self, from: JSONSerialization.data(withJSONObject: value))
             case .some:
                 throw ValueError.invalidValue(
                     response.content,
@@ -44,9 +46,6 @@ public struct DecodableParser<ResultType: Decodable>: Parser {
                     context: ValueError.Context(keyPath: \Response<Data>.content)
                 )
             }
-        } else {
-            content = try jsonDecoder.decode(ResultType.self, from: response.content)
         }
-        return Response(statusCode: response.statusCode, headers: response.headers, content: content)
     }
 }

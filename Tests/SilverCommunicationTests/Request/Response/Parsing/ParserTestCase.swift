@@ -10,9 +10,9 @@ import XCTest
 @testable import SilverCommunication
 
 protocol TestableParser: Parser {
-    associatedtype TestableResultType: Equatable
+    associatedtype TestableContentType: Equatable
     
-    func parse(response: Response<Data>) throws -> Response<TestableResultType>
+    func parse(response: Response<Data>) throws -> Response<TestableContentType>
 }
 
 class ParserTestCase<P: TestableParser>: XCTestCase {
@@ -23,7 +23,7 @@ class ParserTestCase<P: TestableParser>: XCTestCase {
     
     // MARK: - Internal properties
     
-    var result: P.TestableResultType!
+    var result: P.TestableContentType!
     var invalidResult: Any!
     
     // MARK: - XCTestCase
