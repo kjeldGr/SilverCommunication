@@ -31,8 +31,21 @@ private extension HTTPURLResponse {
     var headers: [HTTPHeader: String] {
         allHeaderFields.reduce(into: [HTTPHeader: String]()) { partialResult, item in
             let key = item.key.description
-            if let value = value(forHTTPHeaderField: key) {
-                partialResult[key] = value
+            if #available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *) {
+                if let value = value(forHTTPHeaderField: key) {
+                    partialResult[key] = value
+                }
+            } else {
+                switch item.value {
+                case let value as String:
+                    partialResult[key] = value
+                case let value as LosslessStringConvertible:
+                    partialResult[key] = String(value)
+                case let value as NSNumber:
+                    partialResult[key] = value.stringValue
+                default:
+                    break
+                }
             }
         }
     }
