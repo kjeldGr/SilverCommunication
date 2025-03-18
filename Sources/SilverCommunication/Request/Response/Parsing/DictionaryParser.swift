@@ -43,8 +43,7 @@ public struct DictionaryParser<Key: Hashable, Value>: Parser {
                 context: ValueError.Context(keyPath: \Response<Data>.content)
             )
         case .none:
-            throw ValueError.invalidValue(
-                nil,
+            throw ValueError.missingValue(
                 context: ValueError.Context(keyPath: \Response<Data>.content)
             )
         }

@@ -90,7 +90,7 @@ private final class URLSessionDataTaskMock: URLSessionDataTask, @unchecked Senda
         }
     }
     
-    private func parse(mockingMethod: MockingMethod) throws -> (data: Data?, response: HTTPURLResponse?) {
+    private func parse(mockingMethod: MockingMethod) throws -> (data: Data?, response: URLResponse?) {
         switch mockingMethod {
         case let .response(response, data):
             return (data: data, response: response)

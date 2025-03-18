@@ -21,5 +21,6 @@ public enum ValueError: Error {
         public var underlyingError: Error?
     }
     
-    case invalidValue(Any?, context: any ValueErrorContext)
+    case invalidValue(Any, context: any ValueErrorContext)
+    case missingValue(context: any ValueErrorContext)
 }

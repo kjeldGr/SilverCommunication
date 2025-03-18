@@ -101,19 +101,24 @@ public final class RequestManager {
         }
         
         // Execute URLRequest
-        let task = urlSession.dataTask(with: urlRequest) { data, response, error in
+        let task = urlSession.dataTask(with: urlRequest) { data, urlResponse, error in
             callbackQueue.async {
                 do {
                     if let error {
                         throw error
                     }
-                    guard let httpResponse = response as? HTTPURLResponse else {
-                        throw ValueError.invalidValue(
-                            response,
+                    guard let urlResponse else {
+                        throw ValueError.missingValue(
                             context: ValueError.Context(keyPath: \URLSessionDataTask.response)
                         )
                     }
-                    let response = Response(httpResponse: httpResponse, content: data)
+                    guard let httpURLResponse = urlResponse as? HTTPURLResponse else {
+                        throw ValueError.invalidValue(
+                            urlResponse,
+                            context: ValueError.Context(keyPath: \URLSessionDataTask.response)
+                        )
+                    }
+                    let response = Response(httpURLResponse: httpURLResponse, content: data)
                     try validators.forEach { try $0.validate(response: response) }
                     completion(.success(response))
                 } catch {
@@ -207,8 +212,7 @@ private extension Response where ContentType == Data? {
     func unwrap() throws -> Response<Data> {
         try map { content in
             guard let content else {
-                throw ValueError.invalidValue(
-                    nil,
+                throw ValueError.missingValue(
                     context: ValueError.Context(keyPath: \Response<Data>.content)
                 )
             }

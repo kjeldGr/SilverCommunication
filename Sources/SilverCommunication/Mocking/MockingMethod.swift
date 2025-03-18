@@ -8,7 +8,7 @@
 import Foundation
 
 public enum MockingMethod {
-    case response(HTTPURLResponse?, data: Data? = nil)
+    case response(URLResponse?, data: Data? = nil)
     case data(Data?, statusCode: Int = 200)
     case encodable(Encodable, encoder: JSONEncoder = JSONEncoder(), statusCode: Int = 200)
     case file(name: String, fileExtension: String = "json", bundle: Bundle, statusCode: Int = 200)

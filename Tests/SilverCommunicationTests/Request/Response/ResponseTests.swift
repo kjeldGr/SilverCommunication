@@ -12,21 +12,21 @@ import XCTest
 final class ResponseTests: XCTestCase {
     private var sut: Response<Data?>!
     
-    func testInitializeWithHTTPResponse() throws {
+    func testInitializeWithHTTPURLResponse() throws {
         let url = try XCTUnwrap(URL(string: "https://github.com"))
         let headers = [HTTPHeader.contentType: ContentType.json.headerValue, .language: "en-US"]
         
         for statusCode in [200, 204, 400] {
-            let httpResponse = try XCTUnwrap(HTTPURLResponse(
+            let httpURLResponse = try XCTUnwrap(HTTPURLResponse(
                 url: url,
                 statusCode: statusCode,
                 httpVersion: nil,
                 headerFields: headers
             ))
             let content = Data("Test".utf8)
-            sut = Response(httpResponse: httpResponse, content: content)
+            sut = Response(httpURLResponse: httpURLResponse, content: content)
             
-            XCTAssertEqual(sut.statusCode, httpResponse.statusCode)
+            XCTAssertEqual(sut.statusCode, httpURLResponse.statusCode)
             XCTAssertEqual(sut.headers, headers)
             XCTAssertEqual(sut.content, content)
         }

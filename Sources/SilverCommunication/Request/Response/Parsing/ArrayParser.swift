@@ -38,8 +38,7 @@ public struct ArrayParser<Element>: Parser {
                 context: ValueError.Context(keyPath: \Response<Data>.content)
             )
         case .none:
-            throw ValueError.invalidValue(
-                nil,
+            throw ValueError.missingValue(
                 context: ValueError.Context(keyPath: \Response<Data>.content)
             )
         }

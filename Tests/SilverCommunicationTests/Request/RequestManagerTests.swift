@@ -17,6 +17,7 @@ final class RequestManagerTests: XCTestCase {
     
     // MARK: - Private properties
     
+    private var baseURLString: String!
     private var request: Request!
     private var data: Data!
     private var bundle: Bundle {
@@ -39,7 +40,8 @@ final class RequestManagerTests: XCTestCase {
         }
         """
         data = Data(json.utf8)
-        sut = try RequestManager(baseURL: "https://github.com", mockingMethod: .data(data))
+        baseURLString = "https://github.com"
+        sut = try RequestManager(baseURL: baseURLString, mockingMethod: .data(data))
     }
     
     override func tearDown() {
@@ -226,12 +228,28 @@ final class RequestManagerTests: XCTestCase {
         }
     }
     
-    func testPerformRequestWithInvalidResponse() async throws {
+    func testPerformRequestWithMissingResponse() async throws {
         sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .response(nil))
         do {
             try await sut.perform(request: request)
             XCTFail("Expected perform(request:) to fail with ValueError.invalidValue, succeeded instead.")
-        } catch let ValueError.invalidValue(.none, context as ValueError.Context<URLSessionDataTask, URLResponse?>) {
+        } catch let ValueError.missingValue(context as ValueError.Context<URLSessionDataTask, URLResponse?>) {
+            XCTAssertEqual(context.keyPath, \.response)
+            XCTAssertNil(context.underlyingError)
+        } catch {
+            XCTFail("Expected perform(request:) to fail with ValueError.invalidValue, failed with \(String(reflecting: error)) instead.")
+        }
+    }
+    
+    func testPerformRequestWithInvalidResponse() async throws {
+        let url = try XCTUnwrap(URL(string: baseURLString))
+        let response = URLResponse(url: url, mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
+        sut = RequestManager(baseURL: sut.baseURL, mockingMethod: .response(response))
+        do {
+            try await sut.perform(request: request)
+            XCTFail("Expected perform(request:) to fail with ValueError.invalidValue, succeeded instead.")
+        } catch let ValueError.invalidValue(invalidResponse, context as ValueError.Context<URLSessionDataTask, URLResponse?>) {
+            XCTAssertEqual(response, invalidResponse as? URLResponse)
             XCTAssertEqual(context.keyPath, \.response)
             XCTAssertNil(context.underlyingError)
         } catch {
@@ -259,7 +277,7 @@ final class RequestManagerTests: XCTestCase {
         do {
             _ = try await sut.perform(request: request, parser: DictionaryParser<String, String>())
             XCTFail("Expected perform(request:) to fail with ValueError.invalidValue, succeeded instead.")
-        } catch let ValueError.invalidValue(.none, context as ValueError.Context<Response<Data>, Data>) {
+        } catch let ValueError.missingValue(context as ValueError.Context<Response<Data>, Data>) {
             XCTAssertEqual(context.keyPath, \.content)
             XCTAssertNil(context.underlyingError)
         } catch {

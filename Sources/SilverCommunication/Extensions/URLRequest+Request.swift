@@ -38,8 +38,7 @@ extension URLRequest {
         }
         
         guard let url = urlComponents.url else {
-            throw ValueError.invalidValue(
-                urlComponents.url,
+            throw ValueError.missingValue(
                 context: ValueError.Context(keyPath: \URLComponents.url)
             )
         }

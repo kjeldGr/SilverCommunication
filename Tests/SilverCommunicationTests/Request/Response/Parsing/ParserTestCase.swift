@@ -80,7 +80,7 @@ class ParserTestCase<P: TestableParser>: XCTestCase {
         let data = try JSONSerialization.data(withJSONObject: ["keyPath": result])
         try XCTAssertThrowsError(sut.parse(response: Response(statusCode: 200, headers: [:], content: data))) { error in
             switch error {
-            case let ValueError.invalidValue(.none, context as ValueError.Context<Response<Data>, Data>):
+            case let ValueError.missingValue(context as ValueError.Context<Response<Data>, Data>):
                 XCTAssertEqual(context.keyPath, \.content)
                 XCTAssertNil(context.underlyingError)
             default:

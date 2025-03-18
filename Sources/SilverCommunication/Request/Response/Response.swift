@@ -20,8 +20,12 @@ public struct Response<ContentType> {
         self.content = content
     }
     
-    init(httpResponse: HTTPURLResponse, content: Data?) where ContentType == Data? {
-        self.init(statusCode: httpResponse.statusCode, headers: httpResponse.headers, content: content)
+    init(httpURLResponse: HTTPURLResponse, content: ContentType) where ContentType == Data? {
+        self.init(
+            statusCode: httpURLResponse.statusCode,
+            headers: httpURLResponse.headers,
+            content: content
+        )
     }
 }
 
