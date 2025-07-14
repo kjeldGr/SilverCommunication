@@ -58,7 +58,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/kjeldGr/SilverCommunication.git", 
-            .upToNextMinor(from: "0.15.1")
+            .upToNextMinor(from: "0.15.2")
         )
     ],
     // Target dependency
@@ -81,7 +81,7 @@ If you're using [CocoaPods](https://cocoapods.org) to add `SilverCommunication` 
 # Make sure this line is present in your Podfile (it should be by default)
 use_frameworks!
 
-pod 'SilverCommunication', '~> 0.15.1'
+pod 'SilverCommunication', '~> 0.15.2'
 ```
 
 ### Carthage
@@ -89,7 +89,7 @@ pod 'SilverCommunication', '~> 0.15.1'
 If you're using [Carthage](https://github.com/Carthage/Carthage) to add `SilverCommunication` to your project's dependencies, you can add the package by adding the following to your `Cartfile`:
 
 ```
-github "kjeldGr/SilverCommunication" ~> 0.15.1
+github "kjeldGr/SilverCommunication" ~> 0.15.2
 ```
 
 ## Usage

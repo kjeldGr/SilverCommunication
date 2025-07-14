@@ -205,18 +205,3 @@ import Combine
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension RequestManager: ObservableObject {}
 #endif
-
-// MARK: - Response+Unwrap
-
-private extension Response where ContentType == Data? {
-    func unwrap() throws -> Response<Data> {
-        try map { content in
-            guard let content else {
-                throw ValueError.missingValue(
-                    context: ValueError.Context(keyPath: \Response<Data>.content)
-                )
-            }
-            return content
-        }
-    }
-}
